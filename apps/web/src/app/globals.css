@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+/* Workspace packages live outside the app root, so Tailwind is told where to
+   look for class names. */
+@source "../../../../packages/ui/src";
+@source "../../../src";
+
+/* ------------------------------------------------------------------ *
+ * Theme tokens
+ *
+ * `--c-*` are the tenant-controlled values. A store's theme is projected
+ * onto a wrapper element as inline custom properties, which is why every
+ * Tailwind colour below is an alias rather than a literal. Change the
+ * theme, and the entire storefront restyles with no component changes.
+ * ------------------------------------------------------------------ */
+
+:root {
+  --stack-display: var(--font-serif-src), "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --stack-body: var(--font-sans-src), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Default preset: Obsidian */
+  --c-obsidian: #080908;
+  --c-primary: #063f32;
+  --c-primary-hover: #0a5a48;
+  --c-accent: #c9a227;
+  --c-ivory: #f4f0e7;
+  --c-surface: #ffffff;
+  --c-surface-muted: #faf8f3;
+  --c-border: #e4dfd3;
+  --c-text: #12140f;
+  --c-text-muted: #6e7268;
+  --c-text-inverse: #f4f0e7;
+  --c-success: #1f7a5c;
+  --c-warning: #b4791b;
+  --c-danger: #a62b2b;
+  --c-sale: #c2410c;
+
+  --font-display-family: var(--stack-display);
+  --font-body-family: var(--stack-body);
+  --font-display-weight: 400;
+  --font-display-tracking: 0.02em;
+  --font-display-transform: uppercase;
+  --font-base-size: 15px;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-button: 2px;
+  --radius-card: 4px;
+  --border-width: 1px;
+
+  --container-width: 1400px;
+  --section-spacing: 96px;
+
+  --header-height: 132px;
+}
+
+@theme inline {
+  --color-obsidian: var(--c-obsidian);
+  --color-primary: var(--c-primary);
+  --color-primary-hover: var(--c-primary-hover);
+  --color-accent: var(--c-accent);
+  --color-ivory: var(--c-ivory);
+  --color-surface: var(--c-surface);
+  --color-muted: var(--c-surface-muted);
+  --color-line: var(--c-border);
+  --color-ink: var(--c-text);
+  --color-ink-muted: var(--c-text-muted);
+  --color-inverse: var(--c-text-inverse);
+  --color-success: var(--c-success);
+  --color-warning: var(--c-warning);
+  --color-danger: var(--c-danger);
+  --color-sale: var(--c-sale);
+
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-scale-in: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-marquee: marquee 42s linear infinite;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -180% 0;
+  }
+  to {
+    background-position: 180% 0;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Custom utilities
+ * ------------------------------------------------------------------ */
+
+/** Editorial casing that follows the active theme's typography settings. */
+@utility display-case {
+  text-transform: var(--font-display-transform, none);
+  letter-spacing: var(--font-display-tracking, 0.02em);
+  font-weight: var(--font-display-weight, 400);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/** Fades the trailing edge of a horizontal scroller. */
+@utility fade-edge-r {
+  mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+}
+
+@utility text-balance-pretty {
+  text-wrap: pretty;
+}
+
+/** Two-line clamp used across product cards and list rows. */
+@utility line-clamp-2x {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------ *
+ * Base
+ * ------------------------------------------------------------------ */
+
+@layer base {
+  * {
+    border-color: var(--c-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--c-surface);
+    color: var(--c-text);
+    font-family: var(--font-body-family);
+    font-size: var(--font-base-size);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--c-accent) 34%, transparent);
+    color: var(--c-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+  }
+
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Thin, unobtrusive scrollbars that read as part of the design. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--c-text) 18%, transparent) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--c-text) 16%, transparent);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--c-text) 28%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

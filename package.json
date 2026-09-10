@@ -1,0 +1,22 @@
+{
+  "name": "obsidian-commerce",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Obsidian Commerce — universal multi-tenant ecommerce SaaS platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@obsidian/web",
+    "build": "npm run build --workspace=@obsidian/web",
+    "start": "npm run start --workspace=@obsidian/web",
+    "lint": "npm run lint --workspace=@obsidian/web",
+    "typecheck": "tsc -b --pretty false || npm run typecheck --workspace=@obsidian/web",
+    "db:generate": "prisma generate --schema prisma/schema.prisma",
+    "db:push": "prisma db push --schema prisma/schema.prisma"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "extends": "../../packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@obsidian/ui": ["../../packages/ui/src/index.ts"],
+      "@obsidian/ui/*": ["../../packages/ui/src/*"],
+      "@obsidian/commerce": ["../../packages/commerce/src/index.ts"],
+      "@obsidian/commerce/*": ["../../packages/commerce/src/*"],
+      "@obsidian/data": ["../../packages/data/src/index.ts"],
+      "@obsidian/data/*": ["../../packages/data/src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../packages/**/*.ts",
+    "../../packages/**/*.tsx"
+  ],
+  "exclude": ["node_modules"]
+}
