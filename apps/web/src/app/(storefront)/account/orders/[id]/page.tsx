@@ -20,7 +20,7 @@ import {
   isReturnable,
 } from "@obsidian/commerce";
 import { getOrderById, getReturnForOrder, getShipmentForOrder } from "@obsidian/data";
-import { Badge, Breadcrumb, Card, Separator, cn } from "@obsidian/ui";
+import { Badge, Breadcrumb, Card, OrderHappyPathStepper, OrderTimeline, Separator, cn } from "@obsidian/ui";
 import { ButtonLink } from "@/components/ui/button-link";
 import { OrderActions } from "@/components/account/order-actions";
 import { formatDate, formatDateTime, money, relativeTime } from "@/lib/format";
@@ -100,54 +100,20 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             </div>
 
             <div className="p-5">
-              {currentStep >= 0 && (
-                <ol className="mb-7 hidden grid-cols-6 gap-2 sm:grid">
-                  {ORDER_HAPPY_PATH.map((step, index) => {
-                    const done = index <= currentStep;
-                    return (
-                      <li key={step} className="relative">
-                        <span
-                          className={cn(
-                            "block h-1 rounded-full transition-colors",
-                            done ? "bg-primary" : "bg-line",
-                          )}
-                        />
-                        <p
-                          className={cn(
-                            "mt-2 text-[10.5px] uppercase tracking-[0.08em]",
-                            done ? "font-medium text-ink" : "text-ink-muted",
-                          )}
-                        >
-                          {ORDER_STATUS_META[step].label}
-                        </p>
-                      </li>
-                    );
-                  })}
-                </ol>
-              )}
+              <OrderHappyPathStepper
+                className="mb-7"
+                steps={ORDER_HAPPY_PATH.map((step) => ({ label: ORDER_STATUS_META[step].label }))}
+                currentStep={currentStep}
+              />
 
-              <ol className="relative space-y-6 border-l border-line pl-6">
-                {[...order.timeline].reverse().map((event, index) => (
-                  <li key={event.id} className="relative">
-                    <span
-                      className={cn(
-                        "absolute -left-[29px] grid h-[18px] w-[18px] place-items-center rounded-full border-2 bg-surface",
-                        index === 0 ? "border-primary" : "border-line",
-                      )}
-                    >
-                      <span
-                        className={cn("h-1.5 w-1.5 rounded-full", index === 0 ? "bg-primary" : "bg-line")}
-                      />
-                    </span>
-                    <p className="text-[13px] font-medium text-ink">{event.label}</p>
-                    <p className="mt-0.5 text-[12px] text-ink-muted">{event.description}</p>
-                    <p className="mt-1 text-[11px] text-ink-muted">
-                      {formatDateTime(event.createdAt)}
-                      {event.location ? ` · ${event.location}` : ""} · {event.actor}
-                    </p>
-                  </li>
-                ))}
-              </ol>
+              <OrderTimeline
+                events={[...order.timeline].reverse().map((event) => ({
+                  id: event.id,
+                  label: event.label,
+                  description: event.description,
+                  meta: `${formatDateTime(event.createdAt)}${event.location ? ` · ${event.location}` : ""} · ${event.actor}`,
+                }))}
+              />
 
               {order.status !== "delivered" && !["cancelled", "refunded"].includes(order.status) && (
                 <p className="mt-6 rounded-[var(--radius-sm)] bg-muted px-4 py-3 text-[12.5px] text-ink-muted">

@@ -97,16 +97,18 @@ export default async function JournalPostPage({ params }: { params: Promise<{ sl
         </Section>
       </article>
 
-      <Section tone="muted" spacing="default">
-        <Container>
-          <ProductRail
-            eyebrow="Mentioned in this guide"
-            title="Shop the picks"
-            products={toCardList(products, db)}
-            ctaHref="/shop"
-          />
-        </Container>
-      </Section>
+      {products.length > 0 && (
+        <Section tone="muted" spacing="default">
+          <Container>
+            <ProductRail
+              eyebrow="Mentioned in this guide"
+              title="Shop the picks"
+              products={toCardList(products, db)}
+              ctaHref="/shop"
+            />
+          </Container>
+        </Section>
+      )}
 
       <Section tone="surface" spacing="default">
         <Container>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter, Space_Grotesk } from "next/font/google";
 import { ToastProvider } from "@obsidian/ui";
 import "./globals.css";
 
@@ -13,6 +13,14 @@ const display = Cormorant_Garamond({
 const body = Inter({
   subsets: ["latin"],
   variable: "--font-sans-src",
+  display: "swap",
+});
+
+/** Distinct figures for prices, stats and counts — set apart from body text. */
+const numeric = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-number-src",
   display: "swap",
 });
 
@@ -37,7 +45,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${body.variable} ${numeric.variable}`} suppressHydrationWarning>
       <body>
         <ToastProvider>{children}</ToastProvider>
       </body>

@@ -371,15 +371,19 @@ function buildStoreDatabase(blueprint: StoreBlueprint): StoreDatabase {
 }
 
 /**
- * Ghost tenants have no catalogue, so their counters are synthetic. Keep them
- * inside the plan they pay for — a Starter store doing 3,000 orders a month
- * against a 500-order entitlement makes the whole limits model look decorative.
+ * Ghost tenants have no catalogue, so their counters are synthetic.
+ *
+ * Draw monthly *GMV* from the plan they pay for and derive the order count from
+ * their basket size, rather than drawing orders and basket independently — that
+ * is what produced a jewellery boutique doing 11,000 orders a month at ₹32,000
+ * each. A merchant buys the tier its revenue justifies, and high-basket
+ * verticals reach the same revenue on far fewer orders.
  */
-const GHOST_ORDER_BAND: Record<string, [number, number]> = {
-  plan_starter: [25, 420],
-  plan_growth: [300, 3800],
-  plan_professional: [1400, 14000],
-  plan_enterprise: [6000, 60000],
+const GHOST_GMV_BAND: Record<string, [number, number]> = {
+  plan_starter: [150_000, 1_800_000],
+  plan_growth: [1_500_000, 9_000_000],
+  plan_professional: [8_000_000, 34_000_000],
+  plan_enterprise: [40_000_000, 160_000_000],
 };
 
 /** Basket sizes differ by an order of magnitude between verticals. */
@@ -404,12 +408,19 @@ function buildGhostStores(): { stores: Store[]; subscriptions: Subscription[] } 
 
   GHOST_STORE_BLUEPRINTS.forEach((bp, index) => {
     const id = `ghost_${slugify(bp.name)}`;
-    const [minOrders, maxOrders] = GHOST_ORDER_BAND[bp.planId] ?? [25, 420];
+    const plan = PLANS.find((p) => p.id === bp.planId);
+    const [minGmv, maxGmv] = GHOST_GMV_BAND[bp.planId] ?? GHOST_GMV_BAND.plan_starter!;
     const [minAov, maxAov] = GHOST_AOV_BAND[bp.industry];
     // A closed or suspended tenant stopped trading; show the tail, not a peak.
-    const activityScale = bp.status === "closed" ? 0.08 : bp.status === "suspended" ? 0.18 : bp.status === "paused" ? 0.35 : 1;
-    const orders = Math.max(6, Math.round(rng.int(minOrders, maxOrders) * activityScale));
+    const activityScale =
+      bp.status === "closed" ? 0.08 : bp.status === "suspended" ? 0.18 : bp.status === "paused" ? 0.35 : 1;
     const aov = major(rng.int(minAov, maxAov));
+    const gmv = major(Math.round(rng.int(minGmv, maxGmv) * activityScale));
+    // Never let the derived volume exceed what the plan entitles them to — and
+    // stop just short of the cap, since the platform would have blocked the
+    // order that crossed it rather than recording a suspiciously round total.
+    const orderCeiling = Math.round((plan?.limits.monthlyOrders ?? 500) * 0.94);
+    const orders = Math.min(orderCeiling, Math.max(4, Math.round(gmv / aov)));
     const store: Store = {
       id,
       name: bp.name,

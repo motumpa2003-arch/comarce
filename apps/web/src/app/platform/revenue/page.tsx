@@ -34,15 +34,30 @@ export default function PlatformRevenuePage() {
       plan,
       stores: planStores.length,
       gmv,
-      take: Math.round((gmv * plan.transactionFeeBps) / 10_000),
+      take: Math.round((gmv * plan.transactionFeeBps) / 10_000 / 100) * 100,
       mrr: aggregateMrr(subscriptions.filter((s) => s.planId === plan.id)),
     };
   });
 
-  // kpi.gmv and kpi.takeRate are computed from the same per-store counters and
-  // plan fees as the table below, so the cards and the breakdown always agree.
-  const totalTake = kpi.takeRate;
+  // Sum the same rows the table shows, so the cards, the rows and the footer are
+  // all the same arithmetic — no rounding drift between the summary and detail.
+  const totalTake = takeRateByPlan.reduce((n, r) => n + r.take, 0);
+  const totalGmv = takeRateByPlan.reduce((n, r) => n + r.gmv, 0);
   const totalPlatformRevenue = kpi.mrr + totalTake;
+
+  // GMV in lakh and a daily order count differ by an order of magnitude, so on a
+  // shared axis one line flatlines against the floor. Index both to 100 at the
+  // start of the window instead: the comparison a platform operator actually
+  // wants is whether GMV is outrunning order volume, and that is a shape, not a
+  // magnitude. The absolute figures are on the cards above.
+  const baseline = series.slice(0, 7);
+  const baseGmv = baseline.reduce((n, p) => n + p.gmv, 0) / Math.max(1, baseline.length);
+  const baseOrders = baseline.reduce((n, p) => n + p.orders, 0) / Math.max(1, baseline.length);
+  const indexed = series.map((point) => ({
+    date: point.date,
+    gmvIndex: Math.round((point.gmv / Math.max(1, baseGmv)) * 100),
+    ordersIndex: Math.round((point.orders / Math.max(1, baseOrders)) * 100),
+  }));
 
   const gmvByStore = [...stores]
     .sort((a, b) => b.metrics.gmv - a.metrics.gmv)
@@ -72,9 +87,9 @@ export default function PlatformRevenuePage() {
         <Stat label="Take rate revenue" value={money(totalTake)} hint="On 30-day GMV" />
         <Stat
           label="Merchant GMV"
-          value={money(kpi.gmv)}
+          value={money(totalGmv)}
           delta={kpi.gmvDelta}
-          hint={`${percent((totalTake / Math.max(1, kpi.gmv)) * 100, 2)} effective take`}
+          hint={`${percent((totalTake / Math.max(1, totalGmv)) * 100, 2)} effective take`}
         />
       </div>
 
@@ -83,7 +98,7 @@ export default function PlatformRevenuePage() {
         <Stat label="Churn rate" value={percent(kpi.churnRate)} delta={kpi.churnDelta} invertDelta />
         <Stat
           label="ARPA"
-          value={money(Math.round(kpi.mrr / Math.max(1, kpi.activeStores)))}
+          value={money(Math.round(kpi.mrr / Math.max(1, kpi.activeStores) / 100) * 100)}
           hint="Average revenue per account"
         />
         <Stat
@@ -95,26 +110,22 @@ export default function PlatformRevenuePage() {
 
       <div className="mt-5 space-y-4">
         <ChartFrame
-          title="Merchant GMV"
-          description="Aggregated daily GMV across every tenant, last 180 days"
+          title="GMV against order volume"
+          description="Aggregated daily totals across every seeded tenant, last 180 days"
           height={300}
           legend={[
-            { label: "GMV (₹ lakh)", color: SERIES[0] },
-            { label: "Orders", color: SERIES[2] },
+            { label: "GMV index", color: SERIES[0] },
+            { label: "Orders index", color: SERIES[1] },
           ]}
-          footer="Both series are counts on one axis — GMV is expressed in lakh so the scales are comparable without a second y-axis."
+          footer="Both series are indexed to 100 at the first week of the window, because GMV in rupees and a daily order count share no scale. GMV above orders means baskets are growing; below means growth is coming from volume alone."
         >
           <MultiLineChart
             height={300}
-            format="number"
-            data={series.map((point) => ({
-              date: point.date,
-              gmvLakh: Math.round(point.gmv / 10_000_000),
-              orders: point.orders,
-            }))}
+            format="plain"
+            data={indexed}
             series={[
-              { key: "gmvLakh", label: "GMV (₹ lakh)" },
-              { key: "orders", label: "Orders" },
+              { key: "gmvIndex", label: "GMV index" },
+              { key: "ordersIndex", label: "Orders index" },
             ]}
           />
         </ChartFrame>
@@ -168,7 +179,7 @@ export default function PlatformRevenuePage() {
                   </td>
                   <td className="px-4 py-2.5" />
                   <td className="px-4 py-2.5 text-right font-semibold tabular-nums text-ink">
-                    {moneyShort(takeRateByPlan.reduce((n, r) => n + r.gmv, 0))}
+                    {moneyShort(totalGmv)}
                   </td>
                   <td className="px-4 py-2.5 text-right font-semibold tabular-nums text-ink">
                     {moneyShort(totalTake)}

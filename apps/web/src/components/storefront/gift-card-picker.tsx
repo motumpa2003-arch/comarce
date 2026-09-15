@@ -52,52 +52,56 @@ export function GiftCardPicker() {
     <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-16">
       {/* Preview */}
       <div>
-        <div
-          className="relative flex aspect-[1.6/1] w-full max-w-lg flex-col justify-between overflow-hidden rounded-[var(--radius-lg)] p-7 shadow-xl"
-          style={{ background: `linear-gradient(135deg, ${design.from}, ${design.to})` }}
-        >
+        {/* A single premium surface gets the gold sweep — reserve this for
+            the card itself, not the whole page. */}
+        <div className="border-draw max-w-lg rounded-[var(--radius-lg)] p-1">
           <div
-            aria-hidden
-            className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/10 blur-2xl"
-          />
-          <div className="relative flex items-start justify-between">
-            <div>
+            className="relative flex aspect-[1.6/1] w-full flex-col justify-between overflow-hidden rounded-[calc(var(--radius-lg)-4px)] p-7 shadow-xl"
+            style={{ background: `linear-gradient(135deg, ${design.from}, ${design.to})` }}
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/10 blur-2xl"
+            />
+            <div className="relative flex items-start justify-between">
+              <div>
+                <p
+                  className={cn(
+                    "font-display display-case text-[20px] tracking-[0.16em]",
+                    light ? "text-obsidian" : "text-inverse",
+                  )}
+                >
+                  Obsidian
+                </p>
+                <p
+                  className={cn(
+                    "mt-1 text-[9px] uppercase tracking-[0.3em]",
+                    light ? "text-obsidian/60" : "text-inverse/55",
+                  )}
+                >
+                  Gift card
+                </p>
+              </div>
+              <Gift className={cn("h-6 w-6", light ? "text-obsidian/70" : "text-accent")} />
+            </div>
+            <div className="relative">
               <p
                 className={cn(
-                  "font-display display-case text-[20px] tracking-[0.16em]",
-                  light ? "text-obsidian" : "text-inverse",
+                  "font-display text-[42px] leading-none tabular-nums",
+                  light ? "text-obsidian" : "text-accent",
                 )}
               >
-                Obsidian
+                {money(value)}
               </p>
               <p
                 className={cn(
-                  "mt-1 text-[9px] uppercase tracking-[0.3em]",
-                  light ? "text-obsidian/60" : "text-inverse/55",
+                  "mt-2 text-[11px] tracking-[0.14em]",
+                  light ? "text-obsidian/55" : "text-inverse/50",
                 )}
               >
-                Gift card
+                OBS-XXXX-XXXX-XXXX · valid 24 months
               </p>
             </div>
-            <Gift className={cn("h-6 w-6", light ? "text-obsidian/70" : "text-accent")} />
-          </div>
-          <div className="relative">
-            <p
-              className={cn(
-                "font-display text-[42px] leading-none tabular-nums",
-                light ? "text-obsidian" : "text-accent",
-              )}
-            >
-              {money(value)}
-            </p>
-            <p
-              className={cn(
-                "mt-2 text-[11px] tracking-[0.14em]",
-                light ? "text-obsidian/55" : "text-inverse/50",
-              )}
-            >
-              OBS-XXXX-XXXX-XXXX · valid 24 months
-            </p>
           </div>
         </div>
 

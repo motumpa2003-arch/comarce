@@ -1,74 +1,49 @@
+"use client";
+
 import * as React from "react";
+import { Check } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { buttonClasses, type ButtonSize, type ButtonVariant } from "./button-classes";
 import { cn } from "./cn";
 
-export type ButtonVariant =
-  | "primary"
-  | "accent"
-  | "obsidian"
-  | "outline"
-  | "ghost"
-  | "subtle"
-  | "danger"
-  | "link";
-
-export type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon" | "icon-sm";
-
-const VARIANTS: Record<ButtonVariant, string> = {
-  primary:
-    "bg-primary text-inverse hover:bg-primary-hover active:bg-primary shadow-[0_1px_0_rgba(0,0,0,0.04)]",
-  accent:
-    "bg-accent text-obsidian hover:brightness-[1.06] active:brightness-95 font-medium",
-  obsidian: "bg-obsidian text-inverse hover:bg-obsidian/90",
-  outline:
-    "border border-line bg-transparent text-ink hover:border-ink/40 hover:bg-ink/[0.03]",
-  ghost: "bg-transparent text-ink hover:bg-ink/[0.05]",
-  subtle: "bg-muted text-ink hover:bg-line/60",
-  danger: "bg-danger text-white hover:brightness-110",
-  link: "bg-transparent text-ink underline underline-offset-4 decoration-line hover:decoration-ink px-0",
-};
-
-const SIZES: Record<ButtonSize, string> = {
-  xs: "h-7 px-2.5 text-[11px] gap-1.5",
-  sm: "h-9 px-3.5 text-[12px] gap-2",
-  md: "h-11 px-5 text-[12.5px] gap-2",
-  lg: "h-[52px] px-8 text-[13px] gap-2.5",
-  icon: "h-11 w-11 p-0",
-  "icon-sm": "h-9 w-9 p-0",
-};
-
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "onAnimationEnd"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
   /** Render the child element instead of a <button>, keeping the styles. */
   asChild?: boolean;
   fullWidth?: boolean;
+  /**
+   * Label to briefly show (with a checkmark, plus a spring bounce) after
+   * each click, before reverting on its own — e.g. "Added". Purely
+   * decorative: the passed `onClick` still fires normally. Skipped under
+   * reduced motion.
+   */
+  morphOnClick?: string;
 }
 
-export const buttonClasses = (
-  variant: ButtonVariant = "primary",
-  size: ButtonSize = "md",
-  fullWidth = false,
-  className?: string,
-) =>
-  cn(
-    "relative inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius-button)]",
-    "font-medium uppercase tracking-[0.09em] transition-[background-color,border-color,color,filter,box-shadow] duration-200",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
-    "disabled:pointer-events-none disabled:opacity-45",
-    VARIANTS[variant],
-    SIZES[size],
-    fullWidth && "w-full",
-    className,
-  );
-
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { className, variant = "primary", size = "md", loading, fullWidth, children, disabled, ...props },
+  { className, variant = "primary", size = "md", loading, fullWidth, morphOnClick, children, disabled, onClick, ...props },
   ref,
 ) {
+  const [morphed, setMorphed] = React.useState(false);
+  const reduceMotion = useReducedMotion();
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event);
+    if (morphOnClick && !reduceMotion) {
+      setMorphed(true);
+      window.setTimeout(() => setMorphed(false), 900);
+    }
+  };
+
   return (
-    <button
+    <motion.button
       ref={ref}
+      onClick={handleClick}
+      animate={morphed ? { scale: [1, 0.94, 1.03, 1] } : { scale: 1 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
       className={buttonClasses(variant, size, fullWidth, className)}
       disabled={disabled || loading}
       {...props}
@@ -81,9 +56,31 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent opacity-80" />
         </span>
       )}
-      <span className={cn("inline-flex items-center gap-[inherit]", loading && "invisible")}>
-        {children}
-      </span>
-    </button>
+      <AnimatePresence mode="wait" initial={false}>
+        {morphed && morphOnClick ? (
+          <motion.span
+            key="morph-success"
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className={cn("inline-flex items-center gap-[inherit]", loading && "invisible")}
+          >
+            <Check className="h-4 w-4" />
+            {morphOnClick}
+          </motion.span>
+        ) : (
+          <motion.span
+            key="morph-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={cn("inline-flex items-center gap-[inherit]", loading && "invisible")}
+          >
+            {children}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 });

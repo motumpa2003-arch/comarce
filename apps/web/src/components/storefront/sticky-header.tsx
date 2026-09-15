@@ -28,7 +28,7 @@ export function StickyHeader({ children }: { children: React.ReactNode }) {
     <div
       className={cn(
         "sticky top-0 z-50 transition-[transform,box-shadow] duration-300 ease-out",
-        stuck && "shadow-[0_10px_30px_-24px_rgba(8,9,8,0.45)]",
+        stuck && "shadow-lg",
         hidden ? "-translate-y-full" : "translate-y-0",
       )}
     >

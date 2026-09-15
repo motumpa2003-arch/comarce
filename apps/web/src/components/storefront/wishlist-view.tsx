@@ -59,6 +59,7 @@ export function WishlistView() {
       <Card padded={false}>
         <EmptyState
           icon={<Heart className="h-6 w-6" />}
+          eyebrow="Save it for later"
           title="Your wishlist is empty"
           description="Tap the heart on any product to save it here. We will tell you when a saved item drops in price."
           action={

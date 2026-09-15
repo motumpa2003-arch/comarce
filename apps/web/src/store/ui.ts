@@ -10,6 +10,9 @@ interface UiState {
   quickViewSlug: string | null;
   notificationsOpen: boolean;
   adminSidebarOpen: boolean;
+  /** Bounding rect of the header's cart icon, reported by whichever header is
+   * currently mounted — the fly-to-cart animation targets this position. */
+  cartIconRect: DOMRect | null;
 
   openCart: () => void;
   closeCart: () => void;
@@ -20,6 +23,7 @@ interface UiState {
   setQuickView: (slug: string | null) => void;
   toggleNotifications: (value?: boolean) => void;
   toggleAdminSidebar: (value?: boolean) => void;
+  setCartIconRect: (rect: DOMRect | null) => void;
   closeAll: () => void;
 }
 
@@ -31,6 +35,7 @@ export const useUi = create<UiState>((set) => ({
   quickViewSlug: null,
   notificationsOpen: false,
   adminSidebarOpen: false,
+  cartIconRect: null,
 
   openCart: () => set({ cartOpen: true, searchOpen: false, mobileNavOpen: false }),
   closeCart: () => set({ cartOpen: false }),
@@ -41,6 +46,7 @@ export const useUi = create<UiState>((set) => ({
   setQuickView: (slug) => set({ quickViewSlug: slug }),
   toggleNotifications: (value) => set((s) => ({ notificationsOpen: value ?? !s.notificationsOpen })),
   toggleAdminSidebar: (value) => set((s) => ({ adminSidebarOpen: value ?? !s.adminSidebarOpen })),
+  setCartIconRect: (rect) => set({ cartIconRect: rect }),
   closeAll: () =>
     set({ cartOpen: false, searchOpen: false, mobileNavOpen: false, filtersOpen: false, quickViewSlug: null }),
 }));

@@ -71,6 +71,12 @@ export class Rng {
     const d = new Date(reference);
     d.setDate(d.getDate() - days);
     d.setHours(0, minutes, this.int(0, 59), 0);
+    // With days = 0 the minute-of-day draw easily overshoots the reference time,
+    // which surfaces in the UI as a past event dated "in 3 hours". Pull it back
+    // without spending another draw, so the stream stays deterministic.
+    if (d.getTime() > reference.getTime()) {
+      d.setTime(reference.getTime() - ((minutes % 240) + 1) * 60_000);
+    }
     return d;
   }
 

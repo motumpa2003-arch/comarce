@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, Sparkles, SlidersHorizontal, X } from "lucide-react";
 import type { Facet } from "@obsidian/commerce";
 import { Button, Checkbox, Collapsible, Drawer, cn } from "@obsidian/ui";
 import { buildCatalogHref, toggleInParam } from "@/lib/catalog-params";
@@ -119,7 +120,30 @@ export function FilterPanel({
           </Collapsible>
         ))}
       </div>
+
+      {!compact && <SidebarPromoCard />}
     </div>
+  );
+}
+
+function SidebarPromoCard() {
+  return (
+    <Link
+      href="/deals"
+      className="group relative mt-6 block overflow-hidden rounded-[var(--radius-card)] bg-obsidian p-5 text-inverse"
+    >
+      <Sparkles className="h-6 w-6 text-accent" />
+      <p className="mt-4 font-display display-case text-[17px] leading-snug text-inverse">
+        Upgrade to smarter living
+      </p>
+      <p className="mt-1.5 text-[11.5px] leading-relaxed text-inverse/55">
+        Today's best deals, refreshed daily.
+      </p>
+      <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.1em] text-accent">
+        Shop deals
+        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+      </span>
+    </Link>
   );
 }
 

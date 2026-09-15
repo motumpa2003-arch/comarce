@@ -163,7 +163,7 @@ export function Modal({
         tabIndex={-1}
         className={cn(
           "relative flex max-h-[92vh] w-full flex-col overflow-hidden bg-surface shadow-2xl outline-none transition-all duration-250",
-          mobileSheet ? "rounded-t-2xl sm:rounded-[var(--radius-lg)]" : "rounded-[var(--radius-lg)]",
+          mobileSheet ? "rounded-t-[var(--radius-xl)] sm:rounded-[var(--radius-lg)]" : "rounded-[var(--radius-lg)]",
           MODAL_SIZES[size],
           entered
             ? "translate-y-0 opacity-100 sm:scale-100"
@@ -249,7 +249,7 @@ export function Drawer({
           "absolute flex flex-col bg-surface shadow-2xl outline-none transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           side === "right" && "right-0 top-0 h-full max-w-full",
           side === "left" && "left-0 top-0 h-full max-w-full",
-          side === "bottom" && "bottom-0 left-0 right-0 max-h-[88vh] rounded-t-2xl",
+          side === "bottom" && "bottom-0 left-0 right-0 max-h-[88vh] rounded-t-[var(--radius-xl)]",
           entered ? "translate-x-0 translate-y-0" : hidden,
           className,
         )}

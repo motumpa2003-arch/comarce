@@ -44,7 +44,8 @@ export function CartPageView({
       <Card padded={false} className="overflow-hidden">
         <EmptyState
           icon={<ShoppingBag className="h-6 w-6" />}
-          title="Your bag is empty"
+          eyebrow="Your bag is waiting"
+          title="Nothing here yet"
           description="Browse the catalogue and add something you will actually use. Items you save stay in your wishlist."
           action={
             <div className="flex flex-col gap-2 sm:flex-row">

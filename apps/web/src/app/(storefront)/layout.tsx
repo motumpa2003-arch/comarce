@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getMenu } from "@obsidian/data";
 import { CartDrawer } from "@/components/storefront/cart-drawer";
+import { FlyToCartProvider } from "@/components/storefront/fly-to-cart";
 import { StorefrontFooter } from "@/components/storefront/footer";
 import { StorefrontHeader } from "@/components/storefront/header";
 import { MobileNav, MobileTabBar } from "@/components/storefront/mobile-nav";
@@ -22,18 +23,20 @@ export default async function StorefrontLayout({ children }: { children: React.R
 
   return (
     <div style={themeStyle(db)} className="flex min-h-screen flex-col bg-surface">
-      <StorefrontHeader db={db} stores={storeOptions()} />
+      <FlyToCartProvider>
+        <StorefrontHeader db={db} stores={storeOptions()} />
 
-      <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+        <main className="flex-1 pb-16 lg:pb-0">{children}</main>
 
-      <StorefrontFooter db={db} />
+        <StorefrontFooter db={db} />
 
-      {/* Global overlays */}
-      <CartDrawer />
-      <SearchOverlay />
-      <MobileNav items={menu?.items ?? []} storeName={db.store.name} />
-      <MobileTabBar />
-      <QuickView />
+        {/* Global overlays */}
+        <CartDrawer />
+        <SearchOverlay />
+        <MobileNav items={menu?.items ?? []} storeName={db.store.name} />
+        <MobileTabBar />
+        <QuickView />
+      </FlyToCartProvider>
     </div>
   );
 }

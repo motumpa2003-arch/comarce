@@ -80,6 +80,21 @@ export const REVIEW_TITLES = [
   "Small niggles, still recommend",
   "Third one I have bought",
   "Held up after three months",
+  "Lives up to the description",
+  "Quietly well made",
+  "Replaced something twice the price",
+  "Happy, with one caveat",
+  "Better in person",
+  "No regrets",
+  "Does exactly one thing, does it well",
+  "Careful packaging, quick delivery",
+  "Sizing runs true",
+  "Would buy for someone else too",
+  "Six months in, still fine",
+  "Good, once you get used to it",
+  "Not flawless, still keeping it",
+  "Bought on a whim, glad I did",
+  "Fair price for what it is",
 ];
 
 export const REVIEW_BODIES_POSITIVE = [
@@ -89,6 +104,20 @@ export const REVIEW_BODIES_POSITIVE = [
   "Bought this after reading the other reviews and they were right. Sturdy, well made, and the support team answered my query within a few hours.",
   "Great value. I compared three options in this range and this was the only one that felt properly finished rather than assembled to a price.",
   "Second purchase from this brand. Consistent quality, and the return window meant I could try it without worrying.",
+  "The photographs undersell it, if anything. Stitching is even, nothing is glued where it should be sewn, and the weight feels right in the hand.",
+  "Bought this to replace something that lasted eight months. This one already feels like it will outlast it by years.",
+  "Delivery was a day early. Everything was wrapped properly with no loose packaging rattling around, which I appreciated.",
+  "I was sceptical at this price but the details hold up — the edges are finished, the hardware does not feel hollow, and nothing creaks.",
+  "Bought one, then bought two more as gifts. That is probably the most honest review I can give.",
+  "Six months of near-daily use and it still looks close to new. A quick clean and it comes straight back.",
+  "The description is accurate to the millimetre, which made choosing the right size straightforward for once.",
+  "Customer service replaced a part I damaged myself, at cost, within a week. That is why I will keep buying here.",
+  "It does exactly what it claims and nothing it does not need to. Refreshing in a category full of gimmicks.",
+  "Lighter than I expected without feeling cheap. Whatever they have done with the materials, it works.",
+  "Third order from this store. Same standard of packing and the same accurate delivery window every time.",
+  "My partner liked it enough that I have had to order a second one. Consider that a five-star review by proxy.",
+  "The colour is very slightly warmer than the photograph, and I prefer it that way. Everything else is exactly as listed.",
+  "Reasonable price, sensible design, no fuss. I have spent far more on far worse.",
 ];
 
 export const REVIEW_BODIES_MIXED = [
@@ -97,12 +126,24 @@ export const REVIEW_BODIES_MIXED = [
   "Works well overall. The instructions could be clearer, and I had to look up a video to get it set up properly.",
   "Comfortable and looks smart, but runs slightly small. I would size up if you are between sizes.",
   "Does what it says. Battery life is a little short of the claimed figure in real use, closer to eighty percent of it.",
+  "No complaints about the product. The courier left it with a neighbour without telling me, which cost me an afternoon.",
+  "Looks better than it feels. Perfectly good at this price, just do not expect the finish of something twice as expensive.",
+  "It arrived well packed and works fine, but the setup took longer than it should have for something this simple.",
+  "Good value, though one of the fittings was slightly out of alignment. Ten minutes with a screwdriver sorted it.",
+  "Happy with the purchase overall. The listing photos are shot in bright light, so the shade reads a little darker at home.",
+  "Does the job, but the spare parts are harder to find than I expected. Worth knowing before you commit.",
+  "Solid product let down slightly by the packaging, which arrived crushed on one corner. No damage inside.",
 ];
 
 export const REVIEW_BODIES_NEGATIVE = [
   "Not quite what I expected — the material feels thinner in person than the photos suggest. Return process was smooth at least.",
   "Stopped working properly after a few weeks. Replacement was arranged quickly, so two stars rather than one.",
   "Fit was off for me and the colour is noticeably lighter than shown. Sending it back.",
+  "Arrived with a mark along one edge. The replacement had the same issue, so I have asked for a refund instead.",
+  "Description mentions a feature this simply does not have. Support confirmed it was a listing error, which is fair enough, but I needed that feature.",
+  "Too small for the use I bought it for, and that is partly on me — but the dimensions listed are for the smaller of the two sizes shown.",
+  "It works, but the noise it makes is hard to live with in a small room. Wish someone had mentioned that.",
+  "Three weeks and the finish has already worn at the contact points. Not what I expected at this price.",
 ];
 
 export const SUPPORT_SUBJECTS = [

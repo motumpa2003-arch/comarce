@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getCategoryBySlug, getStoreDb, queryCatalog } from "@obsidian/data";
 import { Container } from "@obsidian/ui";
 import { CatalogView } from "@/components/commerce/catalog-view";
+import { CategoryTile } from "@/components/commerce/category-tile";
 import { parseCatalogParams, type SearchParamsInput } from "@/lib/catalog-params";
 import { currentStore, currentStoreId } from "@/lib/tenant";
 
@@ -89,22 +90,26 @@ export default async function CategoryPage({
 
           {chips.length > 0 && (
             <div className="border-b border-line bg-surface">
-              <Container className="no-scrollbar flex gap-2 overflow-x-auto py-4">
+              <Container className="no-scrollbar flex items-start gap-5 overflow-x-auto py-5">
                 <Link
                   href={`/category/${(parent ?? category).slug}`}
-                  className="shrink-0 rounded-full border border-ink bg-ink px-4 py-2 text-[12px] font-medium text-inverse"
+                  className="group shrink-0 text-center"
                 >
-                  All {(parent ?? category).name}
+                  <div className="grid h-[72px] w-[72px] place-items-center rounded-full border border-ink bg-ink text-[11px] font-medium uppercase tracking-[0.06em] text-inverse">
+                    All
+                  </div>
+                  <p className="mt-2.5 max-w-[76px] text-[11.5px] font-medium leading-snug text-ink">
+                    {(parent ?? category).name}
+                  </p>
                 </Link>
                 {chips.map((child) => (
-                  <Link
+                  <CategoryTile
                     key={child.id}
-                    href={`/category/${child.slug}`}
-                    className="shrink-0 rounded-full border border-line px-4 py-2 text-[12px] text-ink-muted transition-colors hover:border-ink/35 hover:text-ink"
-                  >
-                    {child.name}
-                    <span className="ml-1.5 tabular-nums opacity-60">{child.productCount}</span>
-                  </Link>
+                    category={child}
+                    className="w-[76px]"
+                    circleClassName="h-[72px] w-[72px]"
+                    imageSizes="72px"
+                  />
                 ))}
               </Container>
             </div>

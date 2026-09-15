@@ -156,8 +156,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   });
 }
 
-function escapeHtml(value: string): string {
-  return value
+/** An invoice must never fail to render because one field is missing. */
+function escapeHtml(value: string | undefined | null): string {
+  return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")

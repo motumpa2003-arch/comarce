@@ -110,7 +110,6 @@ export const IMAGE_POOLS = {
   skincare: [
     "photo-1526947425960-945c6e72858f",
     "photo-1620916566398-39f1143ab7be",
-    "photo-1596755094514-f87e34085b2c",
   ],
   makeup: ["photo-1556228720-195a672e8a03"],
   seating: [

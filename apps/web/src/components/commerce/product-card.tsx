@@ -4,12 +4,53 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, Heart, ShoppingBag } from "lucide-react";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { Badge, Rating, cn, useToast } from "@obsidian/ui";
+import { useFlyToCart } from "@/components/storefront/fly-to-cart";
 import type { ProductCardData } from "@/lib/product-view";
 import { money } from "@/lib/format";
 import { useCart } from "@/store/cart";
 import { useHydrated, useWishlist } from "@/store/shopper";
 import { useUi } from "@/store/ui";
+
+/**
+ * Small tilt + magnetic-pull effect for a card's media block, driven by
+ * pointer position. Disabled under reduced-motion and on coarse (touch)
+ * pointers, where there's no hover to react to anyway.
+ */
+function useCardTilt() {
+  const reduceMotion = useReducedMotion();
+  const rotateX = useSpring(0, { stiffness: 300, damping: 22 });
+  const rotateY = useSpring(0, { stiffness: 300, damping: 22 });
+  const x = useSpring(0, { stiffness: 300, damping: 22 });
+  const y = useSpring(0, { stiffness: 300, damping: 22 });
+
+  const enabled = () => !reduceMotion && typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches;
+
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!enabled()) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width - 0.5;
+    const py = (event.clientY - rect.top) / rect.height - 0.5;
+    rotateY.set(px * 9);
+    rotateX.set(py * -9);
+    x.set(px * 6);
+    y.set(py * 6);
+  };
+
+  const onPointerLeave = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+    x.set(0);
+    y.set(0);
+  };
+
+  return {
+    onPointerMove,
+    onPointerLeave,
+    style: { rotateX, rotateY, x, y, transformPerspective: 800 },
+  };
+}
 
 export type ProductCardStyle = "editorial" | "classic" | "compact" | "overlay";
 
@@ -31,6 +72,8 @@ export function ProductCard({
   showQuickAdd = true,
 }: ProductCardProps) {
   const [activeSwatch, setActiveSwatch] = React.useState(0);
+  const tilt = useCardTilt();
+  const mediaRef = React.useRef<HTMLDivElement>(null);
   const add = useCart((s) => s.add);
   const openCart = useUi((s) => s.openCart);
   const setQuickView = useUi((s) => s.setQuickView);
@@ -38,6 +81,7 @@ export function ProductCard({
   const wishlisted = useWishlist((s) => s.items.some((i) => i.id === product.id));
   const hydrated = useHydrated();
   const { toast } = useToast();
+  const { fly } = useFlyToCart();
 
   const swatch = product.swatches[activeSwatch];
   const primaryImage = swatch?.image ?? product.image;
@@ -45,6 +89,9 @@ export function ProductCard({
   const onAdd = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    if (mediaRef.current && primaryImage) {
+      fly(mediaRef.current.getBoundingClientRect(), primaryImage);
+    }
     add({
       productId: product.id,
       variantId: product.defaultVariantId,
@@ -95,9 +142,13 @@ export function ProductCard({
 
   return (
     <article className={cn("group relative flex h-full flex-col", className)}>
-      <Link href={`/product/${product.slug}`} className="flex h-full flex-col focus-visible:outline-none">
+      <div className="flex h-full flex-col">
         {/* ------------------------------ Media ----------------------------- */}
-        <div
+        <motion.div
+          ref={mediaRef}
+          onPointerMove={tilt.onPointerMove}
+          onPointerLeave={tilt.onPointerLeave}
+          style={tilt.style}
           className={cn(
             "relative overflow-hidden bg-muted",
             aspect,
@@ -150,7 +201,7 @@ export function ProductCard({
             aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
             aria-pressed={hydrated ? wishlisted : undefined}
             className={cn(
-              "absolute right-2.5 top-2.5 grid h-9 w-9 place-items-center rounded-full border backdrop-blur transition-all duration-200",
+              "absolute right-2.5 top-2.5 z-10 grid h-9 w-9 place-items-center rounded-full border backdrop-blur transition-all duration-200",
               hydrated && wishlisted
                 ? "border-transparent bg-obsidian text-inverse"
                 : "border-white/50 bg-white/85 text-ink hover:bg-white",
@@ -163,7 +214,7 @@ export function ProductCard({
           {showQuickAdd && (
             <div
               className={cn(
-                "absolute inset-x-2.5 bottom-2.5 flex gap-2 opacity-0 transition-all duration-300",
+                "absolute inset-x-2.5 bottom-2.5 z-10 flex gap-2 opacity-0 transition-all duration-300",
                 "translate-y-2 group-hover:translate-y-0 group-hover:opacity-100",
                 "max-md:hidden",
               )}
@@ -203,11 +254,18 @@ export function ProductCard({
 
           {variant === "overlay" && (
             <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-obsidian/85 via-obsidian/25 to-transparent p-4 pt-14">
-              <p className="font-display text-[17px] leading-tight text-inverse">{product.name}</p>
+              <p className="font-display text-[17px] leading-tight text-inverse">
+                <Link
+                  href={`/product/${product.slug}`}
+                  className="pointer-events-auto after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:underline"
+                >
+                  {product.name}
+                </Link>
+              </p>
               <p className="mt-1 text-[13px] font-medium text-inverse/90">{money(product.price)}</p>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* ------------------------------ Details --------------------------- */}
         {variant !== "overlay" && (
@@ -223,7 +281,12 @@ export function ProductCard({
                 variant === "editorial" ? "text-[13.5px] leading-snug" : "text-[13px] leading-snug",
               )}
             >
-              {product.name}
+              <Link
+                href={`/product/${product.slug}`}
+                className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:underline"
+              >
+                {product.name}
+              </Link>
             </h3>
 
             {variant !== "compact" && (
@@ -245,7 +308,7 @@ export function ProductCard({
             </div>
 
             {product.swatches.length > 1 && (
-              <div className="mt-2.5 flex items-center gap-1.5">
+              <div className="relative z-10 mt-2.5 flex w-fit items-center gap-1.5">
                 {product.swatches.map((s, index) => (
                   <button
                     key={s.value}
@@ -284,7 +347,7 @@ export function ProductCard({
             )}
           </div>
         )}
-      </Link>
+      </div>
 
       {/* Mobile add-to-bag: hover affordances do not exist on touch. */}
       {showQuickAdd && variant !== "overlay" && (
@@ -293,7 +356,7 @@ export function ProductCard({
           onClick={onAdd}
           disabled={!product.inStock}
           className={cn(
-            "mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-line text-[11px] font-medium uppercase tracking-[0.1em] transition-colors md:hidden",
+            "relative z-10 mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-line text-[11px] font-medium uppercase tracking-[0.1em] transition-colors md:hidden",
             product.inStock ? "text-ink active:bg-ink active:text-inverse" : "text-ink-muted",
           )}
         >

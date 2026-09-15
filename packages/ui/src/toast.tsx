@@ -8,7 +8,7 @@ export interface Toast {
   id: string;
   title: string;
   description?: string;
-  tone?: "default" | "success" | "danger" | "accent";
+  tone?: "default" | "success" | "danger" | "warning" | "info" | "accent";
   image?: string;
   action?: { label: string; href?: string; onClick?: () => void };
   duration?: number;
@@ -85,9 +85,13 @@ function ToastCard({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
       ? "before:bg-success"
       : toast.tone === "danger"
         ? "before:bg-danger"
-        : toast.tone === "accent"
-          ? "before:bg-accent"
-          : "before:bg-primary";
+        : toast.tone === "warning"
+          ? "before:bg-warning"
+          : toast.tone === "info"
+            ? "before:bg-primary"
+            : toast.tone === "accent"
+              ? "before:bg-accent"
+              : "before:bg-primary";
 
   return (
     <div

@@ -4,25 +4,41 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Award,
+  Bell,
+  Bookmark,
+  CreditCard,
+  FileLock,
   Heart,
   LayoutDashboard,
   LifeBuoy,
   LogOut,
   MapPin,
   Package,
+  Repeat,
   Settings,
+  Shield,
+  SlidersHorizontal,
   Star,
+  Users,
 } from "lucide-react";
 import { cn } from "@obsidian/ui";
 
 const LINKS = [
   { href: "/account", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/account/orders", label: "Orders & tracking", icon: Package, countKey: "orders" as const },
+  { href: "/account/buy-again", label: "Buy again", icon: Repeat },
   { href: "/account/wishlist", label: "Wishlist", icon: Heart },
+  { href: "/account/saved-searches", label: "Saved searches", icon: Bookmark },
   { href: "/account/addresses", label: "Addresses", icon: MapPin, countKey: "addresses" as const },
+  { href: "/account/payment-methods", label: "Payment methods", icon: CreditCard },
   { href: "/account/rewards", label: "Rewards", icon: Award, countKey: "points" as const },
+  { href: "/account/referrals", label: "Referrals", icon: Users },
   { href: "/account/reviews", label: "My reviews", icon: Star },
+  { href: "/account/notifications", label: "Notifications", icon: Bell },
   { href: "/account/support", label: "Help & support", icon: LifeBuoy },
+  { href: "/account/preferences", label: "Preferences", icon: SlidersHorizontal },
+  { href: "/account/security", label: "Security", icon: Shield },
+  { href: "/account/privacy", label: "Privacy & data", icon: FileLock },
   { href: "/account/settings", label: "Settings", icon: Settings },
 ];
 

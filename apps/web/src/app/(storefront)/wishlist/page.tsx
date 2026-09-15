@@ -26,16 +26,18 @@ export default async function WishlistPage() {
         </Container>
       </Section>
 
-      <Section tone="muted" spacing="default">
-        <Container>
-          <ProductRail
-            eyebrow="Popular right now"
-            title="Might be worth saving"
-            products={toCardList(popular, db)}
-            ctaHref="/shop"
-          />
-        </Container>
-      </Section>
+      {popular.length > 0 && (
+        <Section tone="muted" spacing="default">
+          <Container>
+            <ProductRail
+              eyebrow="Popular right now"
+              title="Might be worth saving"
+              products={toCardList(popular, db)}
+              ctaHref="/shop"
+            />
+          </Container>
+        </Section>
+      )}
     </>
   );
 }

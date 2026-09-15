@@ -61,6 +61,17 @@ export function buildHomePage(
       position: 0,
     },
     {
+      id: "sec_promo",
+      type: "promo_strip",
+      settings: {
+        tone: "obsidian",
+        messages:
+          "Free delivery over ₹2,000 | 30-day returns, no questions | Authenticity guaranteed on every brand | New drops every Thursday",
+      },
+      visible: true,
+      position: 1,
+    },
+    {
       id: "sec_categories",
       type: "category_grid",
       eyebrow: "Shop by category",
@@ -96,6 +107,27 @@ export function buildHomePage(
       position: 3,
     },
     {
+      id: "sec_collection_feature",
+      type: "collection_feature",
+      eyebrow: "This week's edit",
+      title: "Everyday Essentials",
+      body: "The pieces that earn their place — chosen for how often you will actually reach for them, not how loud they are.",
+      image: img(EDITORIAL.heroShopping, 1200, 1500),
+      ctaLabel: "Shop the edit",
+      source: { kind: "collection", value: col("everyday-essentials"), limit: 10 },
+      visible: true,
+      position: 5,
+    },
+    {
+      id: "sec_mosaic",
+      type: "image_mosaic",
+      eyebrow: "Browse the floor",
+      title: "Where would you like to start?",
+      subtitle: "Every aisle, one tap away.",
+      visible: true,
+      position: 7,
+    },
+    {
       id: "sec_new",
       type: "product_grid",
       eyebrow: "New arrivals",
@@ -126,6 +158,21 @@ export function buildHomePage(
       position: 5,
     },
     {
+      id: "sec_film",
+      type: "video_hero",
+      eyebrow: "The making of",
+      title: "Built to be kept.",
+      subtitle:
+        "Three workshops, four materials and a refusal to cut the corner nobody would notice. Watch how a season comes together.",
+      image: img(EDITORIAL.heroCouple, 1900, 1100),
+      ctaLabel: "Shop the film",
+      ctaHref: "/shop?sort=newest",
+      secondaryCtaLabel: "Read the journal",
+      secondaryCtaHref: "/journal",
+      visible: true,
+      position: 10,
+    },
+    {
       id: "sec_trending",
       type: "carousel",
       eyebrow: "Trending now",
@@ -137,6 +184,18 @@ export function buildHomePage(
       position: 6,
     },
     {
+      id: "sec_recommended",
+      type: "recommendations",
+      eyebrow: "Picked for you",
+      title: "Because you looked at these",
+      ctaLabel: "See more",
+      ctaHref: "/shop",
+      source: { kind: "recommendation", value: "personalised", limit: 12 },
+      settings: { layout: "rail" },
+      visible: true,
+      position: 12,
+    },
+    {
       id: "sec_brands",
       type: "logo_cloud",
       eyebrow: "Top brands",
@@ -145,6 +204,22 @@ export function buildHomePage(
       ctaHref: "/brands",
       visible: true,
       position: 7,
+    },
+    {
+      id: "sec_brand_story",
+      type: "brand_story",
+      eyebrow: "House note",
+      title: "Small batches, on purpose.",
+      body: "We would rather make four hundred of something properly than four thousand of it quickly. Every maker we work with is named on the product page, every material is traceable to its mill, and nothing ships until it has survived a wash test none of us enjoy running.",
+      image: img(EDITORIAL.interiorStyled, 1200, 1400),
+      ctaLabel: "Meet the makers",
+      ctaHref: "/journal",
+      settings: {
+        pillars:
+          "Named makers on every product | Traceable materials | Repairs, not replacements | Carbon-neutral delivery",
+      },
+      visible: true,
+      position: 15,
     },
     {
       id: "sec_deals",
@@ -172,6 +247,43 @@ export function buildHomePage(
       position: 9,
     },
     {
+      id: "sec_review_wall",
+      type: "review_wall",
+      eyebrow: "Verified reviews",
+      title: "What people actually say",
+      subtitle: "Every review below is attached to a delivered order.",
+      source: { limit: 9, kind: "manual" },
+      visible: true,
+      position: 18,
+    },
+    {
+      id: "sec_faq",
+      type: "faq",
+      eyebrow: "Before you ask",
+      title: "The questions we get most",
+      ctaLabel: "All questions",
+      ctaHref: "/faq",
+      source: { kind: "manual", limit: 6 },
+      visible: true,
+      position: 19,
+    },
+    {
+      id: "sec_recently_viewed",
+      type: "recently_viewed",
+      eyebrow: "Pick up where you left off",
+      title: "Recently viewed",
+      visible: true,
+      position: 20,
+    },
+    {
+      id: "sec_promise",
+      type: "custom_html",
+      title: "Our promise",
+      body: "<p>Every order is packed by hand in Bengaluru and checked twice before it leaves the building.</p><ul><li><strong>Thirty days</strong> to change your mind, for any reason or none.</li><li><strong>Free return pickup</strong> from every serviceable pin code.</li><li><strong>Two-year repair</strong> on anything with a seam, a hinge or a clasp.</li></ul><p>If something goes wrong, one reply from us fixes it. That is the whole policy.</p>",
+      visible: true,
+      position: 21,
+    },
+    {
       id: "sec_newsletter",
       type: "newsletter",
       eyebrow: "Stay in the loop",
@@ -188,7 +300,9 @@ export function buildHomePage(
     title: "Home",
     slug: "home",
     type: "home",
-    sections,
+    // Array order is the page order; positions are derived so inserting a
+    // section never means renumbering every one below it by hand.
+    sections: sections.map((section, index) => ({ ...section, position: index })),
     status: "published",
     seo: {
       title: `${storeName} — commerce for a brighter tomorrow`,
@@ -226,6 +340,28 @@ export function buildStaticPages(storeId: string, storeName: string, referenceDa
       "our-story",
       "static",
       `${storeName} started with a simple frustration: buying well made things online was harder than it needed to be. Listings were thin, sizing was a guess and support disappeared after checkout.\n\nWe built the opposite. Every product page carries the specification you would actually ask about, every brand publishes where things are made, and every order is covered by a thirty-day window with no argument at the end of it.\n\nToday the platform carries more than fifty thousand products across sixteen categories, served from eight fulfilment locations, and it is used by merchants who care about the same things we do.`,
+    ),
+    make(
+      "About us",
+      "about",
+      "static",
+      `${storeName} is a multi-category retailer built on one idea: the product page should answer the question you would actually ask in a shop.
+
+That means the specification a salesperson would quote, the measurement taken from the sample rather than the spec sheet, and a photograph of the thing itself rather than a mood. It means telling you when something is low on stock instead of letting you find out at checkout.
+
+We employ 240 people across Bengaluru, Pune and eight fulfilment centres. Nobody here is paid a commission on what you buy, which is why our staff will tell you when the cheaper option is the better one.`,
+    ),
+    make(
+      "Sustainability",
+      "sustainability",
+      "static",
+      `We would rather publish an honest number than a comfortable one.
+
+Eighty-one percent of our packaging is recycled fibre and none of it contains plastic tape. Every delivery inside India is carbon-neutral through verified offsets, which we know is the weakest form of the claim — the stronger one is that consolidating dispatch to the nearest fulfilment centre cut our per-parcel distance by 34% last year.
+
+Where we fall short: return shipping is still the largest single part of our footprint, and our own worst category is fast-moving beauty, where small items travel long distances. We publish both numbers in the annual report rather than only the flattering ones.
+
+Repair before replace is the policy on anything with a seam, a hinge or a clasp for two years. A product that stays in use is worth more than any offset we could buy.`,
     ),
     make(
       "Shipping information",
@@ -311,8 +447,28 @@ export function buildNavigation(
             image: c.image,
           })),
       },
-      { id: "nav_new", label: "New arrivals", href: "/shop?sort=newest" },
-      { id: "nav_deals", label: "Deals", href: "/deals", badge: "Hot" },
+      {
+        id: "nav_new",
+        label: "New & trending",
+        href: "/new-arrivals",
+        children: [
+          { id: "nav_new_arrivals", label: "New arrivals", href: "/new-arrivals", description: "Added in the last thirty days" },
+          { id: "nav_trending", label: "Trending now", href: "/trending", description: "What is moving this week" },
+          { id: "nav_bestsellers", label: "Bestsellers", href: "/bestsellers", description: "Ranked on units shipped" },
+          { id: "nav_recommended", label: "Recommended for you", href: "/recommended", description: "Picked from your browsing" },
+        ],
+      },
+      {
+        id: "nav_deals",
+        label: "Deals",
+        href: "/deals",
+        badge: "Hot",
+        children: [
+          { id: "nav_deals_hub", label: "All deals", href: "/deals", description: "Every discount and coupon" },
+          { id: "nav_flash", label: "Flash sale", href: "/flash-sale", description: "Deepest cuts, live stock" },
+          { id: "nav_gift_guide", label: "Gift guide", href: "/gift-guide", description: "Four stars and above" },
+        ],
+      },
       { id: "nav_brands", label: "Brands", href: "/brands" },
       { id: "nav_journal", label: "Journal", href: "/journal" },
       { id: "nav_gift", label: "Gift cards", href: "/gift-cards" },
@@ -327,8 +483,11 @@ export function buildNavigation(
     items: [
       { id: "f_all", label: "All categories", href: "/categories" },
       { id: "f_deals", label: "Deals", href: "/deals" },
-      { id: "f_new", label: "New arrivals", href: "/shop?sort=newest" },
-      { id: "f_best", label: "Best sellers", href: "/shop?sort=popularity" },
+      { id: "f_flash", label: "Flash sale", href: "/flash-sale" },
+      { id: "f_new", label: "New arrivals", href: "/new-arrivals" },
+      { id: "f_best", label: "Bestsellers", href: "/bestsellers" },
+      { id: "f_trending", label: "Trending", href: "/trending" },
+      { id: "f_giftguide", label: "Gift guide", href: "/gift-guide" },
       { id: "f_collections", label: "Collections", href: "/collections" },
       { id: "f_gift", label: "Gift cards", href: "/gift-cards" },
     ],
@@ -342,8 +501,10 @@ export function buildNavigation(
     items: [
       { id: "f_track", label: "Track order", href: "/track" },
       { id: "f_returns", label: "Returns & refunds", href: "/pages/returns" },
+      { id: "f_size", label: "Size guide", href: "/size-guide" },
       { id: "f_help", label: "Help centre", href: "/pages/help" },
       { id: "f_ship", label: "Shipping info", href: "/pages/shipping" },
+      { id: "f_stores", label: "Store locator", href: "/stores" },
       { id: "f_contact", label: "Contact us", href: "/contact" },
       { id: "f_faq", label: "FAQs", href: "/faq" },
     ],
@@ -355,8 +516,13 @@ export function buildNavigation(
     handle: "footer_company",
     name: "Footer — Company",
     items: [
+      { id: "f_about", label: "About us", href: "/pages/about" },
       { id: "f_story", label: "Our story", href: "/pages/our-story" },
+      { id: "f_sustain", label: "Sustainability", href: "/pages/sustainability" },
+      { id: "f_lookbook", label: "Lookbook", href: "/lookbook" },
       { id: "f_journal", label: "Journal", href: "/journal" },
+      { id: "f_membership", label: "Membership", href: "/membership" },
+      { id: "f_announcements", label: "Announcements", href: "/announcements" },
       { id: "f_privacy", label: "Privacy policy", href: "/pages/privacy" },
       { id: "f_terms", label: "Terms of service", href: "/pages/terms" },
       { id: "f_sell", label: "Sell on Obsidian", href: "/platform" },

@@ -34,16 +34,18 @@ export default async function CartPage() {
         </Container>
       </Section>
 
-      <Section tone="muted" spacing="default">
-        <Container>
-          <ProductRail
-            eyebrow="Before you go"
-            title="You may also like"
-            products={toCardList(recommended, db)}
-            ctaHref="/shop"
-          />
-        </Container>
-      </Section>
+      {recommended.length > 0 && (
+        <Section tone="muted" spacing="default">
+          <Container>
+            <ProductRail
+              eyebrow="Before you go"
+              title="You may also like"
+              products={toCardList(recommended, db)}
+              ctaHref="/shop"
+            />
+          </Container>
+        </Section>
+      )}
     </>
   );
 }

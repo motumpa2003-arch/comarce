@@ -129,16 +129,18 @@ export default async function CheckoutSuccessPage({
         </Container>
       </Section>
 
-      <Section tone="muted" spacing="default">
-        <Container>
-          <ProductRail
-            eyebrow="Customers also bought"
-            title="Complete your order"
-            products={toCardList(recommended, db)}
-            ctaHref="/shop"
-          />
-        </Container>
-      </Section>
+      {recommended.length > 0 && (
+        <Section tone="muted" spacing="default">
+          <Container>
+            <ProductRail
+              eyebrow="Customers also bought"
+              title="Complete your order"
+              products={toCardList(recommended, db)}
+              ctaHref="/shop"
+            />
+          </Container>
+        </Section>
+      )}
     </>
   );
 }

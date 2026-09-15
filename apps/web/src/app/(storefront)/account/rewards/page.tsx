@@ -99,12 +99,18 @@ export default async function RewardsPage() {
           {LOYALTY_TIERS.map((entry, index) => {
             const current = entry.key === tier.key;
             const unlocked = index <= tierIndex;
-            return (
+            /* The two flagship tiers get the gold treatment — everyday
+               tiers (Member/Silver) stay on the standard emerald/ink
+               language, so gold still reads as reserved for something. */
+            const premiumTier = entry.key === "gold" || entry.key === "black";
+            // The gold sweep sets its own background, which would fight a
+            // Card's own bg-surface if applied directly — so it wraps the
+            // card as a slim frame instead (same fix as the gift-card preview).
+            const tierCard = (
               <Card
-                key={entry.key}
                 className={cn(
-                  "flex flex-col",
-                  current && "border-ink ring-1 ring-ink",
+                  "flex h-full flex-col",
+                  current && (premiumTier ? "border-accent ring-1 ring-accent" : "border-ink ring-1 ring-ink"),
                   !unlocked && "opacity-70",
                 )}
               >
@@ -116,7 +122,7 @@ export default async function RewardsPage() {
                     {entry.name.charAt(0)}
                   </span>
                   {current && (
-                    <Badge tone="obsidian" size="xs">
+                    <Badge tone={premiumTier ? "accent" : "obsidian"} size="xs">
                       Current
                     </Badge>
                   )}
@@ -134,6 +140,16 @@ export default async function RewardsPage() {
                   ))}
                 </ul>
               </Card>
+            );
+
+            return premiumTier && !current ? (
+              <div key={entry.key} className="border-draw h-full rounded-[var(--radius-card)] p-1">
+                {tierCard}
+              </div>
+            ) : (
+              <div key={entry.key} className="h-full">
+                {tierCard}
+              </div>
             );
           })}
         </div>

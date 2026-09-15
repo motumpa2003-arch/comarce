@@ -138,7 +138,7 @@ export function Hero({
               {stats.map((stat) => (
                 <div key={stat.label}>
                   <dt className="sr-only">{stat.label}</dt>
-                  <dd className="font-display text-[24px] leading-none text-accent">{stat.value}</dd>
+                  <dd className="font-number text-[24px] leading-none tabular-nums text-accent">{stat.value}</dd>
                   <p className="mt-1.5 text-[10.5px] uppercase tracking-[0.16em] text-inverse/55">{stat.label}</p>
                 </div>
               ))}

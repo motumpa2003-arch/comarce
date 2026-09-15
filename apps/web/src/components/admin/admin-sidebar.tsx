@@ -10,8 +10,10 @@ import {
   Megaphone,
   Package,
   Palette,
+  Plug,
   Settings,
   ShoppingBag,
+  Truck,
   Users,
   Wallet,
   Warehouse,
@@ -32,6 +34,8 @@ const ICONS: Record<string, LucideIcon> = {
   palette: Palette,
   wallet: Wallet,
   settings: Settings,
+  truck: Truck,
+  plug: Plug,
 };
 
 export interface AdminBadges {

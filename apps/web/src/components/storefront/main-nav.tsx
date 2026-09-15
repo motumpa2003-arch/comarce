@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, ChevronDown, LayoutGrid } from "lucide-react";
+import { motion } from "framer-motion";
 import { Badge, cn } from "@obsidian/ui";
 import type { NavigationItem } from "@obsidian/commerce";
 
@@ -31,7 +32,7 @@ export function MainNav({ items, tagline }: { items: NavigationItem[]; tagline: 
 
   return (
     <div
-      className="relative hidden border-t border-line bg-surface lg:block"
+      className="relative hidden border-t border-white/[0.08] bg-obsidian lg:block"
       onMouseLeave={scheduleClose}
     >
       <div className="mx-auto flex h-[46px] max-w-[var(--container-width)] items-center gap-1 px-4 sm:px-6 lg:px-10">
@@ -63,7 +64,7 @@ export function MainNav({ items, tagline }: { items: NavigationItem[]; tagline: 
                   href={item.href}
                   className={cn(
                     "relative flex h-[46px] items-center gap-1.5 px-3 text-[12px] font-medium tracking-[0.02em] transition-colors",
-                    isActive || openId === item.id ? "text-primary" : "text-ink hover:text-primary",
+                    isActive || openId === item.id ? "text-accent" : "text-inverse/75 hover:text-accent",
                   )}
                 >
                   {item.label}
@@ -74,7 +75,11 @@ export function MainNav({ items, tagline }: { items: NavigationItem[]; tagline: 
                   )}
                   {hasChildren && <ChevronDown className="h-3 w-3 opacity-60" />}
                   {(isActive || openId === item.id) && (
-                    <span className="absolute inset-x-3 bottom-0 h-[2px] bg-accent" />
+                    <motion.span
+                      layoutId="nav-active-underline"
+                      className="absolute inset-x-3 bottom-0 h-[2px] bg-accent"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
                   )}
                 </Link>
               </div>
@@ -91,7 +96,7 @@ export function MainNav({ items, tagline }: { items: NavigationItem[]; tagline: 
       {active?.children?.length ? (
         <div
           onMouseEnter={() => open(active.id)}
-          className="absolute inset-x-0 top-full z-40 animate-fade-in border-y border-line bg-surface shadow-[0_24px_48px_-24px_rgba(8,9,8,0.25)]"
+          className="absolute inset-x-0 top-full z-40 animate-fade-in border-y border-line bg-surface shadow-xl"
         >
           <div className="mx-auto max-w-[var(--container-width)] px-4 py-8 sm:px-6 lg:px-10">
             {active.id === "nav_shop" ? (

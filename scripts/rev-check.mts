@@ -1,11 +1,12 @@
 const { getPlans, getSubscriptions, listAllStores } = await import("../packages/data/src/repositories.ts");
+const { monthlyMrr } = await import("../packages/data/src/billing.ts");
 
 const plans = new Map(getPlans().map((p) => [p.id, p]));
 const subs = new Map(getSubscriptions().map((s) => [s.storeId, s]));
 const rows = listAllStores().map((s) => {
   const plan = plans.get(s.planId)!;
   const sub = subs.get(s.id);
-  const mrr = sub ? (sub.interval === "annual" ? Math.round(sub.amount / 12) : sub.amount) : 0;
+  const mrr = sub ? monthlyMrr(sub) : 0;
   return {
     name: s.name,
     plan: plan.name,

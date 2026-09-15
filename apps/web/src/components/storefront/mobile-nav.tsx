@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, Heart, Home, LayoutGrid, ShoppingBag, User } from "lucide-react";
+import { motion } from "framer-motion";
 import type { NavigationItem } from "@obsidian/commerce";
 import { Drawer, cn } from "@obsidian/ui";
 import { selectItemCount, useCart } from "@/store/cart";
@@ -161,7 +162,13 @@ export function MobileTabBar() {
                   )}
                 </span>
                 {tab.label}
-                {active && <span className="absolute inset-x-6 top-0 h-[2px] rounded-full bg-accent" />}
+                {active && (
+                  <motion.span
+                    layoutId="mobile-tab-active"
+                    className="absolute inset-x-6 top-0 h-[2px] rounded-full bg-accent"
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                )}
               </Link>
             </li>
           );

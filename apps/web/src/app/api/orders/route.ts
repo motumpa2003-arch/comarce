@@ -28,6 +28,36 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Contact and delivery address are required." }, { status: 400 });
   }
 
+  // Reject a malformed payload rather than pricing it. Without this, a line
+  // missing `unitPrice` prices to NaN and persists an order whose totals can
+  // never be rendered — a bad request should fail loudly, not corrupt the table.
+  const badLine = body.lines.findIndex(
+    (line) =>
+      !line?.productId ||
+      !line.variantId ||
+      !Number.isFinite(line.unitPrice) ||
+      line.unitPrice < 0 ||
+      !Number.isInteger(line.quantity) ||
+      line.quantity < 1,
+  );
+  if (badLine >= 0) {
+    return NextResponse.json(
+      { error: `Line ${badLine + 1} is missing a product, variant, price or quantity.` },
+      { status: 422 },
+    );
+  }
+
+  const address = body.shippingAddress;
+  const missing = (["firstName", "lastName", "line1", "city", "state", "postalCode"] as const).filter(
+    (field) => !String(address[field] ?? "").trim(),
+  );
+  if (missing.length) {
+    return NextResponse.json(
+      { error: `Delivery address is missing: ${missing.join(", ")}.` },
+      { status: 422 },
+    );
+  }
+
   // A card decline path so the failure branch is demonstrable end to end.
   if (body.paymentMethod === "card" && body.contact.email.startsWith("decline@")) {
     return NextResponse.json({ error: "Payment was declined by the issuing bank." }, { status: 402 });

@@ -301,15 +301,31 @@ export function getCustomerById(storeIdOrSlug: string | undefined, id: string): 
  * The signed-in shopper for the storefront demo: a repeat customer with a
  * varied order history so account, tracking and returns all have content.
  */
+/**
+ * The account the storefront demo signs you in as.
+ *
+ * Chosen to exercise as much of the account area as possible: several orders in
+ * different states, at least one return, a review and a support ticket. A demo
+ * customer with no tickets leaves the ticket detail page unreachable, which
+ * reads as a dead end rather than as an empty state.
+ */
 export function getDemoCustomer(storeIdOrSlug?: string): Customer {
   const db = getStoreDb(storeIdOrSlug);
   const ranked = [...db.customers]
     .map((customer) => ({
       customer,
       orders: db.orders.filter((o) => o.customerId === customer.id),
+      tickets: db.tickets.filter((t) => t.customerId === customer.id).length,
+      returns: db.returns.filter((r) => r.customerId === customer.id).length,
+      reviews: db.reviews.filter((r) => r.customerId === customer.id).length,
     }))
     .filter((entry) => entry.orders.length >= 3)
     .sort((a, b) => {
+      // Coverage first — how many distinct surfaces this account can demonstrate.
+      const coverageA = Number(a.tickets > 0) + Number(a.returns > 0) + Number(a.reviews > 0);
+      const coverageB = Number(b.tickets > 0) + Number(b.returns > 0) + Number(b.reviews > 0);
+      if (coverageB !== coverageA) return coverageB - coverageA;
+
       const varietyA = new Set(a.orders.map((o) => o.status)).size;
       const varietyB = new Set(b.orders.map((o) => o.status)).size;
       return varietyB - varietyA || b.orders.length - a.orders.length;

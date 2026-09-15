@@ -7,6 +7,7 @@ import { ProductGrid } from "./product-card";
 import { ProductList } from "./product-row";
 import { AppliedFilterChips, FilterPanel, MobileFilterSheet } from "./filter-panel";
 import { CatalogToolbar } from "./catalog-toolbar";
+import { RecentlyViewedRail } from "./recently-viewed-rail";
 import { appliedFilters, buildCatalogHref, type SearchParamsInput } from "@/lib/catalog-params";
 import { toCardList } from "@/lib/product-view";
 
@@ -88,6 +89,7 @@ export function CatalogView({
                 {result.items.length === 0 ? (
                   <EmptyState
                     icon={<PackageSearch className="h-6 w-6" />}
+                    eyebrow="No matches"
                     title={emptyTitle}
                     description={emptyDescription}
                     action={<ButtonLink href={basePath}>Clear filters</ButtonLink>}
@@ -112,6 +114,8 @@ export function CatalogView({
           </div>
         </Container>
       </Section>
+
+      <RecentlyViewedRail eyebrow="Pick up where you left off" />
 
       <MobileFilterSheet
         facets={result.facets}

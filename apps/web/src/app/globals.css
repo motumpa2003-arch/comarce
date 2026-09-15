@@ -17,6 +17,9 @@
 :root {
   --stack-display: var(--font-serif-src), "Iowan Old Style", Georgia, "Times New Roman", serif;
   --stack-body: var(--font-sans-src), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Prices, stats and counts get their own figures — distinct from the body
+     text they sit next to, so a price doesn't just read as "bold Inter". */
+  --stack-number: var(--font-number-src), var(--font-sans-src), ui-sans-serif, system-ui, sans-serif;
 
   /* Default preset: Obsidian */
   --c-obsidian: #080908;
@@ -35,24 +38,53 @@
   --c-danger: #a62b2b;
   --c-sale: #c2410c;
 
+  /*
+   * The full brand scale, documented — the semantic `--c-*` tokens above stay
+   * the tenant-themeable set components actually reference; these named steps
+   * exist so future work has intermediate shades to reach for (a gold-300
+   * tint, a stone-500 for secondary text) instead of inventing one-off hex
+   * values.
+   */
+  --obsidian-950: #050706;
+  --obsidian-900: #080908;
+  --obsidian-800: #101512;
+  --emerald-900: #03261f;
+  --emerald-800: #063f32;
+  --emerald-700: #0a5a47;
+  --emerald-500: #16836a;
+  --gold-600: #c9a227;
+  --gold-500: #d8b448;
+  --gold-300: #e9d28a;
+  --stone-200: #e6e2d9;
+  --stone-300: #d3cfc5;
+  --stone-500: #98958d;
+  --stone-700: #5e5c57;
+  --stone-900: #171815;
+
   --font-display-family: var(--stack-display);
   --font-body-family: var(--stack-body);
-  --font-display-weight: 400;
+  --font-display-weight: 500;
   --font-display-tracking: 0.02em;
   --font-display-transform: uppercase;
   --font-base-size: 15px;
 
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --radius-button: 2px;
-  --radius-card: 4px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-button: 8px;
+  --radius-card: 10px;
   --border-width: 1px;
 
   --container-width: 1400px;
   --section-spacing: 96px;
 
   --header-height: 132px;
+
+  /* Shared premium easing — already the de facto standard across card/gallery/nav
+     hovers; named here so new motion (JS and CSS) references one source. */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -74,12 +106,27 @@
 
   --font-display: var(--font-display-family);
   --font-body: var(--font-body-family);
+  --font-number: var(--stack-number);
+
+  /*
+   * Redefining Tailwind's own shadow scale — every existing `shadow-sm`,
+   * `shadow-lg`, `shadow-xl` and `shadow-2xl` class across the app picks up
+   * these soft, low-opacity values automatically, no per-component edits.
+   */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 40px -16px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 32px 64px -24px rgba(0, 0, 0, 0.14);
+  --shadow-2xl: 0 40px 80px -28px rgba(0, 0, 0, 0.16);
 
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-fade-in: fade-in 0.4s ease-out both;
   --animate-scale-in: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-marquee: marquee 42s linear infinite;
   --animate-shimmer: shimmer 1.8s linear infinite;
+  --animate-pulse-ring: pulse-ring 0.9s var(--ease-premium) both;
+  --animate-border-draw: border-draw 1.6s linear infinite;
 }
 
 @keyframes fade-up {
@@ -131,6 +178,39 @@
   }
 }
 
+/** One-shot expanding ring, used to punctuate a value/badge changing. */
+@keyframes pulse-ring {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 55%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--c-accent) 0%, transparent);
+  }
+}
+
+/** Slow gold sweep around a bordered surface — reserve for a single premium card. */
+@keyframes border-draw {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+/*
+ * Every price, stat, count and SKU in the app is already marked with
+ * Tailwind's `tabular-nums` (74+ call sites) so figures line up in columns.
+ * That convention doubles as the hook for a distinct numeral typeface —
+ * one rule here gives every number in the product its own font, instead of
+ * numbers just reading as bold body text, with no per-component changes.
+ * Unlayered (not inside @layer) so it wins over the utility layer without
+ * fighting Tailwind for specificity.
+ */
+.tabular-nums {
+  font-family: var(--stack-number);
+}
+
 /* ------------------------------------------------------------------ *
  * Custom utilities
  * ------------------------------------------------------------------ */
@@ -164,6 +244,31 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/**
+ * A slow gold sweep traveling around a card's border. Reserve for a single
+ * premium surface (loyalty, gift cards) — this reads as decorative noise if
+ * applied broadly.
+ */
+@utility border-draw {
+  position: relative;
+  z-index: 0;
+  border: var(--border-width) solid transparent;
+  background:
+    linear-gradient(var(--c-surface), var(--c-surface)) padding-box,
+    linear-gradient(
+        100deg,
+        color-mix(in srgb, var(--c-accent) 25%, transparent) 0%,
+        var(--c-accent) 45%,
+        color-mix(in srgb, var(--c-accent) 25%, transparent) 60%,
+        transparent 100%
+      )
+      border-box;
+  background-size:
+    100% 100%,
+    260% 100%;
+  animation: var(--animate-border-draw);
 }
 
 /* ------------------------------------------------------------------ *

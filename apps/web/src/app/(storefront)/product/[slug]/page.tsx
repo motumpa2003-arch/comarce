@@ -125,11 +125,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </Section>
       )}
 
-      <Section tone="surface" spacing="default">
-        <Container>
-          <RecentlyViewedRail excludeId={detail.id} eyebrow="Pick up where you left off" />
-        </Container>
-      </Section>
+      <RecentlyViewedRail excludeId={detail.id} eyebrow="Pick up where you left off" />
     </>
   );
 }

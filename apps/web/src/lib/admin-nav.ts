@@ -27,6 +27,9 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     links: [
       { label: "Dashboard", href: "/admin" },
       { label: "Analytics", href: "/admin/analytics", permission: "analytics.read" },
+      { label: "Sales report", href: "/admin/analytics/sales", permission: "analytics.read" },
+      { label: "Product report", href: "/admin/analytics/products", permission: "analytics.read" },
+      { label: "Customer report", href: "/admin/analytics/customers", permission: "analytics.read" },
     ],
   },
   {
@@ -38,6 +41,8 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       { label: "Collections", href: "/admin/collections", permission: "products.read" },
       { label: "Brands", href: "/admin/brands", permission: "products.read" },
       { label: "Attributes", href: "/admin/attributes", permission: "products.read" },
+      { label: "Media", href: "/admin/media", permission: "products.read" },
+      { label: "Import", href: "/admin/products/import", permission: "products.write" },
     ],
   },
   {
@@ -98,7 +103,27 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     links: [
       { label: "Payments", href: "/admin/finance/payments", permission: "finance.read" },
       { label: "Payouts", href: "/admin/finance/payouts", permission: "finance.read" },
+      { label: "Invoices", href: "/admin/finance/invoices", permission: "finance.read" },
+      { label: "Reconciliation", href: "/admin/finance/reconciliation", permission: "finance.read" },
       { label: "Taxes", href: "/admin/finance/taxes", permission: "finance.read" },
+    ],
+  },
+  {
+    label: "Shipping",
+    icon: "truck",
+    links: [
+      { label: "Zones", href: "/admin/shipping/zones", permission: "settings.read" },
+      { label: "Rates", href: "/admin/shipping/rates", permission: "settings.read" },
+      { label: "Carriers", href: "/admin/shipping/carriers", permission: "settings.read" },
+    ],
+  },
+  {
+    label: "Integrations",
+    icon: "plug",
+    links: [
+      { label: "Apps", href: "/admin/integrations", permission: "settings.read" },
+      { label: "Webhooks", href: "/admin/integrations/webhooks", permission: "settings.read" },
+      { label: "Logs", href: "/admin/integrations/logs", permission: "settings.read" },
     ],
   },
   {
@@ -106,7 +131,8 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     icon: "settings",
     links: [
       { label: "Store", href: "/admin/settings", permission: "settings.read" },
-      { label: "Staff & roles", href: "/admin/settings/staff", permission: "staff.read" },
+      { label: "Staff", href: "/admin/settings/staff", permission: "staff.read" },
+      { label: "Roles & permissions", href: "/admin/settings/roles", permission: "staff.read" },
       { label: "Shipping", href: "/admin/settings/shipping", permission: "settings.read" },
       { label: "Notifications", href: "/admin/settings/notifications", permission: "settings.read" },
       { label: "API & webhooks", href: "/admin/settings/api", permission: "settings.read" },

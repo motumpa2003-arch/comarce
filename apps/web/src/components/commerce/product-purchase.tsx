@@ -20,6 +20,7 @@ import type { ProductDetail } from "@/lib/product-detail";
 import { deliveryWindow, money, number } from "@/lib/format";
 import { useHydrated, useRecentlyViewed, useWishlist } from "@/store/shopper";
 import { QuantityStepper } from "@/components/storefront/cart-drawer";
+import { useFlyToCart } from "@/components/storefront/fly-to-cart";
 import { usePurchase } from "./use-purchase";
 import { VariantPicker } from "./variant-picker";
 import { ProductGallery } from "./product-gallery";
@@ -31,6 +32,7 @@ export function ProductPurchase({ detail }: { detail: ProductDetail }) {
   const pushRecent = useRecentlyViewed((s) => s.push);
   const hydrated = useHydrated();
   const { toast } = useToast();
+  const { fly } = useFlyToCart();
 
   React.useEffect(() => {
     pushRecent(detail.id);
@@ -165,7 +167,13 @@ export function ProductPurchase({ detail }: { detail: ProductDetail }) {
             variant="accent"
             className="min-w-[180px] flex-1"
             disabled={!purchase.inStock}
-            onClick={() => purchase.addToBag()}
+            morphOnClick="Added"
+            onClick={(event) => {
+              if (purchase.activeImage) {
+                fly(event.currentTarget.getBoundingClientRect(), purchase.activeImage);
+              }
+              purchase.addToBag();
+            }}
           >
             <ShoppingBag className="h-4 w-4" />
             Add to bag
@@ -214,24 +222,24 @@ export function ProductPurchase({ detail }: { detail: ProductDetail }) {
         <DeliveryChecker />
 
         {/* Assurances */}
-        <ul className="mt-6 grid grid-cols-2 gap-y-3 border-t border-line pt-5 text-[12px] text-ink-muted">
-          <li className="flex items-center gap-2">
-            <Truck className="h-4 w-4 shrink-0 text-primary" />
-            Free delivery above ₹999
-          </li>
-          <li className="flex items-center gap-2">
-            <RotateCcw className="h-4 w-4 shrink-0 text-primary" />
-            30-day easy returns
-          </li>
-          <li className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
-            Secure encrypted payment
-          </li>
-          <li className="flex items-center gap-2">
-            <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />
-            100% authentic, brand sourced
-          </li>
-        </ul>
+        <div className="mt-6 grid grid-cols-2 gap-3 border-t border-line pt-5">
+          {[
+            { icon: Truck, label: "Free delivery above ₹999" },
+            { icon: RotateCcw, label: "30-day easy returns" },
+            { icon: ShieldCheck, label: "Secure encrypted payment" },
+            { icon: BadgeCheck, label: "100% authentic, brand sourced" },
+          ].map(({ icon: Icon, label }) => (
+            <div
+              key={label}
+              className="flex items-center gap-2.5 rounded-[var(--radius-card)] border border-line bg-muted/60 p-3"
+            >
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-primary/25 text-primary">
+                <Icon className="h-[15px] w-[15px]" />
+              </span>
+              <p className="text-[11.5px] leading-snug text-ink-muted">{label}</p>
+            </div>
+          ))}
+        </div>
 
         {/* Highlights */}
         {detail.highlights.length > 0 && (
@@ -359,6 +367,7 @@ function StickyBuyBar({
   detail: ProductDetail;
 }) {
   const [visible, setVisible] = React.useState(false);
+  const { fly } = useFlyToCart();
 
   React.useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 620);
@@ -383,7 +392,13 @@ function StickyBuyBar({
           variant="accent"
           className="shrink-0"
           disabled={!purchase.inStock}
-          onClick={() => purchase.addToBag()}
+          morphOnClick="Added"
+          onClick={(event) => {
+            if (purchase.activeImage) {
+              fly(event.currentTarget.getBoundingClientRect(), purchase.activeImage);
+            }
+            purchase.addToBag();
+          }}
         >
           <ShoppingBag className="h-4 w-4" />
           Add to bag

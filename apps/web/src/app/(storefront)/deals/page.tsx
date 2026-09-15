@@ -141,17 +141,19 @@ export default async function DealsPage() {
       )}
 
       {/* Clearance rail */}
-      <Section tone="surface" spacing="default">
-        <Container>
-          <ProductRail
-            eyebrow="Final markdowns"
-            title="Clearance"
-            products={toCardList(clearance.items, db)}
-            ctaHref="/shop?avail=on_sale&sort=discount"
-            ctaLabel="Shop all deals"
-          />
-        </Container>
-      </Section>
+      {clearance.items.length > 0 && (
+        <Section tone="surface" spacing="default">
+          <Container>
+            <ProductRail
+              eyebrow="Final markdowns"
+              title="Clearance"
+              products={toCardList(clearance.items, db)}
+              ctaHref="/shop?avail=on_sale&sort=discount"
+              ctaLabel="Shop all deals"
+            />
+          </Container>
+        </Section>
+      )}
     </>
   );
 }

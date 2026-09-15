@@ -18,6 +18,7 @@ import {
 } from "@obsidian/data";
 import { Badge, Container, Rating, Section, SectionHeading, cn } from "@obsidian/ui";
 import { ButtonLink } from "@/components/ui/button-link";
+import { CategoryTile } from "@/components/commerce/category-tile";
 import { ProductGrid } from "@/components/commerce/product-card";
 import { ProductRail } from "@/components/commerce/product-rail";
 import { toCardList } from "@/lib/product-view";
@@ -26,6 +27,18 @@ import { NewsletterForm } from "../newsletter-form";
 import { CountdownTimer } from "./countdown";
 import { Hero } from "./hero";
 import { ProductTabs } from "./product-tabs";
+import {
+  BrandStory,
+  CollectionFeature,
+  CustomHtml,
+  FaqSection,
+  ImageMosaic,
+  PromoStrip,
+  RecentlyViewedSection,
+  RecommendationsSection,
+  ReviewWall,
+  VideoHero,
+} from "./extras";
 
 export function PageSections({ page, db }: { page: StorePage; db: StoreDatabase }) {
   return (
@@ -66,6 +79,37 @@ function SectionSwitch({ section, db }: { section: PageSection; db: StoreDatabas
       return <NewsletterSection section={section} />;
     case "rich_text":
       return <RichTextSection section={section} />;
+    case "promo_strip":
+      return <PromoStrip section={section} />;
+    case "video_hero":
+      return <VideoHero section={section} />;
+    case "collection_feature":
+      return (
+        <CollectionFeature
+          section={section}
+          db={db}
+          products={toCardList(resolveProducts(section, db, section.source?.limit ?? 10), db)}
+        />
+      );
+    case "review_wall":
+      return <ReviewWall section={section} db={db} />;
+    case "faq":
+      return <FaqSection section={section} db={db} />;
+    case "brand_story":
+      return <BrandStory section={section} db={db} />;
+    case "image_mosaic":
+      return <ImageMosaic section={section} db={db} />;
+    case "recommendations":
+      return (
+        <RecommendationsSection
+          section={section}
+          products={toCardList(resolveProducts(section, db, section.source?.limit ?? 12), db)}
+        />
+      );
+    case "recently_viewed":
+      return <RecentlyViewedSection section={section} />;
+    case "custom_html":
+      return <CustomHtml section={section} />;
     default:
       return null;
   }
@@ -100,6 +144,7 @@ function HeroSection({ section, db }: { section: PageSection; db: StoreDatabase 
 
 function CategoryGridSection({ section, db }: { section: PageSection; db: StoreDatabase }) {
   const categories = db.categories.filter((c) => c.level === 0).slice(0, section.source?.limit ?? 10);
+  if (!categories.length) return null;
 
   return (
     <Section tone="ivory" spacing="default">
@@ -121,21 +166,7 @@ function CategoryGridSection({ section, db }: { section: PageSection; db: StoreD
         />
         <div className="mt-9 grid grid-cols-3 gap-x-3 gap-y-6 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 xl:gap-x-4">
           {categories.map((category) => (
-            <Link key={category.id} href={`/category/${category.slug}`} className="group text-center">
-              <div className="relative mx-auto aspect-square w-full max-w-[104px] overflow-hidden rounded-full border border-line bg-surface">
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  fill
-                  sizes="104px"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-              </div>
-              <p className="mt-3 text-[11.5px] font-medium leading-snug text-ink transition-colors group-hover:text-primary">
-                {category.name}
-              </p>
-              <p className="mt-0.5 text-[10.5px] text-ink-muted">{category.productCount} items</p>
-            </Link>
+            <CategoryTile key={category.id} category={category} />
           ))}
         </div>
       </Container>
@@ -184,6 +215,7 @@ export function TrustBar({ tone = "obsidian" }: { tone?: "obsidian" | "muted" })
 
 function EditorialSplit({ section }: { section: PageSection }) {
   const [main, ...rest] = section.images ?? [];
+  if (!main) return null;
 
   return (
     <Section tone="surface" spacing="default">
@@ -372,6 +404,8 @@ function CarouselSection({ section, db }: { section: PageSection; db: StoreDatab
 /* ------------------------------ Lookbook ---------------------------- */
 
 function LookbookSection({ section }: { section: PageSection }) {
+  if (!section.title) return null;
+
   return (
     <section className="relative isolate min-h-[520px] overflow-hidden bg-obsidian text-inverse">
       {section.image && (
@@ -624,6 +658,8 @@ function NewsletterSection({ section }: { section: PageSection }) {
 /* ------------------------------ Rich text --------------------------- */
 
 function RichTextSection({ section }: { section: PageSection }) {
+  if (!section.eyebrow && !section.title && !section.body) return null;
+
   return (
     <Section tone="surface" spacing="default">
       <Container size="narrow">

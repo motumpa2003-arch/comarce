@@ -67,6 +67,7 @@ export default async function AccountReviewsPage() {
         {reviews.length === 0 ? (
           <EmptyState
             icon={<Star className="h-6 w-6" />}
+            eyebrow="Your voice matters"
             title="No reviews yet"
             description="Once you review a delivered product it will appear here, along with the merchant's reply."
             action={<ButtonLink href="/account/orders">See delivered orders</ButtonLink>}

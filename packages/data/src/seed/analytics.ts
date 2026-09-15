@@ -281,7 +281,8 @@ export function buildPlatformKpi(
   for (const store of stores) {
     gmv += store.metrics.gmv;
     platformOrders += store.metrics.orders;
-    takeRate += Math.round((store.metrics.gmv * (feeByPlan.get(store.planId) ?? 0)) / 10_000);
+    // Snap each store's fee to a whole rupee; a platform invoice has no paise.
+    takeRate += Math.round((store.metrics.gmv * (feeByPlan.get(store.planId) ?? 0)) / 10_000 / 100) * 100;
   }
 
   return {

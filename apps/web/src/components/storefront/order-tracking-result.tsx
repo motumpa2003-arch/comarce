@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Truck } from "lucide-react";
 import { ORDER_HAPPY_PATH, ORDER_STATUS_META, type Order } from "@obsidian/commerce";
-import { Badge, Card, cn } from "@obsidian/ui";
+import { Badge, Card, OrderHappyPathStepper, OrderTimeline } from "@obsidian/ui";
 import { formatDate, formatDateTime, money } from "@/lib/format";
 
 export function OrderTrackingResult({ order }: { order: Order }) {
@@ -26,44 +26,20 @@ export function OrderTrackingResult({ order }: { order: Order }) {
       </div>
 
       <div className="p-5">
-        {currentStep >= 0 && (
-          <ol className="mb-8 hidden grid-cols-6 gap-2 sm:grid">
-            {ORDER_HAPPY_PATH.map((step, index) => (
-              <li key={step}>
-                <span className={cn("block h-1 rounded-full", index <= currentStep ? "bg-primary" : "bg-line")} />
-                <p
-                  className={cn(
-                    "mt-2 text-[10px] uppercase tracking-[0.08em]",
-                    index <= currentStep ? "font-medium text-ink" : "text-ink-muted",
-                  )}
-                >
-                  {ORDER_STATUS_META[step].label}
-                </p>
-              </li>
-            ))}
-          </ol>
-        )}
+        <OrderHappyPathStepper
+          className="mb-8"
+          steps={ORDER_HAPPY_PATH.map((step) => ({ label: ORDER_STATUS_META[step].label }))}
+          currentStep={currentStep}
+        />
 
         <div className="grid gap-6 sm:grid-cols-[minmax(0,1fr)_240px]">
-          <ol className="relative space-y-5 border-l border-line pl-6">
-            {[...order.timeline].reverse().map((event, index) => (
-              <li key={event.id} className="relative">
-                <span
-                  className={cn(
-                    "absolute -left-[29px] grid h-[18px] w-[18px] place-items-center rounded-full border-2 bg-surface",
-                    index === 0 ? "border-primary" : "border-line",
-                  )}
-                >
-                  <span className={cn("h-1.5 w-1.5 rounded-full", index === 0 ? "bg-primary" : "bg-line")} />
-                </span>
-                <p className="text-[13px] font-medium text-ink">{event.label}</p>
-                <p className="mt-0.5 text-[11.5px] text-ink-muted">
-                  {formatDateTime(event.createdAt)}
-                  {event.location ? ` · ${event.location}` : ""}
-                </p>
-              </li>
-            ))}
-          </ol>
+          <OrderTimeline
+            events={[...order.timeline].reverse().map((event) => ({
+              id: event.id,
+              label: event.label,
+              meta: `${formatDateTime(event.createdAt)}${event.location ? ` · ${event.location}` : ""}`,
+            }))}
+          />
 
           <div className="space-y-4">
             <div className="rounded-[var(--radius-card)] border border-line p-4">

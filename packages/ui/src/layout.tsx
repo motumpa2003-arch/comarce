@@ -44,9 +44,9 @@ export function Section({
         tone === "muted" && "bg-muted text-ink",
         tone === "obsidian" && "bg-obsidian text-inverse",
         tone === "primary" && "bg-primary text-inverse",
-        spacing === "tight" && "py-10 sm:py-12",
-        spacing === "default" && "py-14 sm:py-20",
-        spacing === "loose" && "py-20 sm:py-28",
+        spacing === "tight" && "py-8 sm:py-12 lg:py-16",
+        spacing === "default" && "py-10 sm:py-16 lg:py-24",
+        spacing === "loose" && "py-16 sm:py-20 lg:py-32",
         className,
       )}
       {...props}

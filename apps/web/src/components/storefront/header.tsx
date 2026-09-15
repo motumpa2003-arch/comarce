@@ -24,7 +24,9 @@ export function Wordmark({ store, inverse }: { store: StoreDatabase["store"]; in
         >
           {store.logoText}
         </span>
-        <span className="mt-[3px] text-[8.5px] font-medium uppercase tracking-[0.32em] text-ink-muted">
+        <span
+          className={`mt-[3px] text-[8.5px] font-medium uppercase tracking-[0.32em] ${inverse ? "text-inverse/50" : "text-ink-muted"}`}
+        >
           Commerce
         </span>
       </span>
@@ -40,9 +42,9 @@ export function StorefrontHeader({ db, stores }: { db: StoreDatabase; stores: St
       <AnnouncementBar storeId={db.store.id} stores={stores} />
 
       <StickyHeader>
-        <div className="border-b border-line bg-surface">
+        <div className="border-b border-white/[0.08] bg-obsidian">
           <div className="mx-auto flex h-[72px] max-w-[var(--container-width)] items-center gap-4 px-4 sm:px-6 lg:gap-10 lg:px-10">
-            <Wordmark store={db.store} />
+            <Wordmark store={db.store} inverse />
             <div className="hidden max-w-[620px] flex-1 lg:block">
               <SearchTrigger />
             </div>

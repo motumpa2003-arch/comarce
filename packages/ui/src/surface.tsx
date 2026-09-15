@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "./cn";
+import { ProgressFill } from "./progress-fill";
 
 /* ------------------------------- Card ------------------------------- */
 
@@ -81,12 +82,15 @@ export function Skeleton({ className }: { className?: string }) {
 
 export function EmptyState({
   icon,
+  eyebrow,
   title,
   description,
   action,
   className,
 }: {
   icon?: React.ReactNode;
+  /** A short, punchy line above the heading — e.g. "YOUR BAG IS WAITING." */
+  eyebrow?: string;
   title: string;
   description?: string;
   action?: React.ReactNode;
@@ -98,6 +102,9 @@ export function EmptyState({
         <div className="mb-5 grid h-14 w-14 place-items-center rounded-full border border-line bg-muted text-ink-muted">
           {icon}
         </div>
+      )}
+      {eyebrow && (
+        <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>
       )}
       <h3 className="font-display text-[19px] tracking-tight text-ink">{title}</h3>
       {description && <p className="mt-2 max-w-sm text-[13px] leading-relaxed text-ink-muted">{description}</p>}
@@ -175,10 +182,7 @@ export function Progress({
       aria-valuemin={0}
       aria-valuemax={100}
     >
-      <div
-        className={cn("h-full rounded-full transition-[width] duration-500", toneClass)}
-        style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
-      />
+      <ProgressFill width={`${Math.max(0, Math.min(100, value))}%`} className={toneClass} />
     </div>
   );
 }

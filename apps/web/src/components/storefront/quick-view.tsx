@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Heart, ShieldCheck, Truck } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Badge, Button, Modal, Rating, Skeleton, cn } from "@obsidian/ui";
 import type { ProductDetail } from "@/lib/product-detail";
 import { money } from "@/lib/format";
@@ -36,7 +37,28 @@ export function QuickView() {
 
   return (
     <Modal open={Boolean(slug)} onClose={() => setQuickView(null)} size="lg" title={detail?.name ?? "Quick view"}>
-      {loading || !detail ? <QuickViewSkeleton /> : <QuickViewBody detail={detail} />}
+      <AnimatePresence mode="popLayout" initial={false}>
+        {loading || !detail ? (
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.25 }}
+          >
+            <QuickViewSkeleton />
+          </motion.div>
+        ) : (
+          <motion.div
+            key={detail.id}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <QuickViewBody detail={detail} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Modal>
   );
 }

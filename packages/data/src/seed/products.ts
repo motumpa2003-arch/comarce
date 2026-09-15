@@ -15,6 +15,27 @@ import { IMAGE_POOLS, img } from "../images";
 import { Rng, slugify } from "../rng";
 import { DESCRIPTION_OPENERS, PRODUCT_BLUEPRINTS, type ProductBlueprint } from "./catalog-blueprints";
 
+/**
+ * When a category's curated name list runs out before `perCategory` does,
+ * extend it with tasteful "edition" variants of the same base names rather
+ * than fabricating unrelated products or silently capping the catalogue.
+ */
+const EDITION_TAGS = ["Heritage", "Signature", "Studio", "Reserve", "Weekend", "Everyday", "Limited", "Classic"];
+
+function namesForCategory(rng: Rng, blueprint: ProductBlueprint, perCategory: number): string[] {
+  const base = blueprint.names;
+  if (perCategory <= base.length) return rng.sample(base, perCategory);
+
+  const extended = [...base];
+  outer: for (const tag of rng.shuffle(EDITION_TAGS)) {
+    for (const name of base) {
+      if (extended.length >= perCategory) break outer;
+      extended.push(`${name} — ${tag} Edition`);
+    }
+  }
+  return rng.sample(extended, Math.min(perCategory, extended.length));
+}
+
 const SKU_PREFIX: Record<Industry, string> = {
   fashion: "FSH",
   electronics: "ELE",
@@ -62,8 +83,7 @@ export function buildProducts({
     const category = bySlug.get(blueprint.categorySlug)!;
     if (industries !== "all" && !industries.includes(category.industry)) continue;
 
-    const count = Math.min(perCategory, blueprint.names.length);
-    const names = rng.sample(blueprint.names, count);
+    const names = namesForCategory(rng, blueprint, perCategory);
 
     for (const name of names) {
       products.push(

@@ -84,6 +84,8 @@ export default async function AdminDashboard({
         <Stat
           label="Revenue"
           value={money(kpis.revenue)}
+          numeric={kpis.revenue}
+          numericFormat="money"
           delta={kpis.revenueDelta}
           hint="vs previous period"
           icon={<IndianRupee className="h-4 w-4" />}
@@ -91,6 +93,8 @@ export default async function AdminDashboard({
         <Stat
           label="Orders"
           value={number(kpis.orders)}
+          numeric={kpis.orders}
+          numericFormat="number"
           delta={kpis.ordersDelta}
           hint={`${openOrders.length} awaiting action`}
           icon={<ShoppingBag className="h-4 w-4" />}
@@ -98,12 +102,16 @@ export default async function AdminDashboard({
         <Stat
           label="Average order value"
           value={money(kpis.averageOrderValue)}
+          numeric={kpis.averageOrderValue}
+          numericFormat="money"
           delta={kpis.averageOrderValueDelta}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <Stat
           label="Conversion rate"
           value={`${kpis.conversionRate.toFixed(2)}%`}
+          numeric={kpis.conversionRate}
+          numericFormat="percent"
           delta={kpis.conversionRateDelta}
           hint={`${number(kpis.customers)} new customers`}
           icon={<Users className="h-4 w-4" />}

@@ -63,6 +63,7 @@ export default async function AccountOrdersPage({
         ) : (
           <EmptyState
             icon={<Package className="h-6 w-6" />}
+            eyebrow={q ? "No matches" : "Your orders will land here"}
             title={q ? `No orders match “${q}”` : "Nothing here yet"}
             description={
               status === "all"

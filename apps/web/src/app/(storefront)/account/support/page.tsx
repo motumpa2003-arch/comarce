@@ -79,7 +79,14 @@ export default async function SupportPage() {
                         <span className="text-[11px] text-ink-muted">#{ticket.orderNumber}</span>
                       )}
                     </div>
-                    <p className="mt-1.5 text-[13.5px] text-ink">{ticket.subject}</p>
+                    <p className="mt-1.5 text-[13.5px] text-ink">
+                      <Link
+                        href={`/account/support/${ticket.id}`}
+                        className="transition-colors hover:text-primary focus-visible:underline"
+                      >
+                        {ticket.subject}
+                      </Link>
+                    </p>
                     <p className="mt-1 line-clamp-2x text-[12px] text-ink-muted">
                       {ticket.messages[ticket.messages.length - 1]?.body}
                     </p>
@@ -87,6 +94,12 @@ export default async function SupportPage() {
                   <div className="shrink-0 text-right">
                     <p className="text-[11.5px] text-ink-muted">{relativeTime(ticket.updatedAt)}</p>
                     <p className="mt-0.5 text-[11px] text-ink-muted">{formatDate(ticket.createdAt)}</p>
+                    <Link
+                      href={`/account/support/${ticket.id}`}
+                      className="mt-2 inline-block text-[11.5px] font-medium text-primary underline-offset-2 hover:underline"
+                    >
+                      Open
+                    </Link>
                   </div>
                 </li>
               ))}

@@ -1,25 +1,17 @@
 import Link from "next/link";
-import {
-  Facebook,
-  Globe,
-  Instagram,
-  Leaf,
-  Linkedin,
-  Sparkles,
-  Twitter,
-  Users,
-  Youtube,
-} from "lucide-react";
+import { Globe, Leaf, Sparkles, Users } from "lucide-react";
+import { FaLinkedinIn } from "react-icons/fa6";
+import { SiApple, SiFacebook, SiGoogleplay, SiInstagram, SiX, SiYoutube } from "react-icons/si";
 import { getMenu, type StoreDatabase } from "@obsidian/data";
 import { Container } from "@obsidian/ui";
 import { NewsletterForm } from "./newsletter-form";
 
 const SOCIALS = [
-  { icon: Instagram, label: "Instagram", href: "#" },
-  { icon: Facebook, label: "Facebook", href: "#" },
-  { icon: Youtube, label: "YouTube", href: "#" },
-  { icon: Twitter, label: "X", href: "#" },
-  { icon: Linkedin, label: "LinkedIn", href: "#" },
+  { icon: SiInstagram, label: "Instagram", href: "#" },
+  { icon: SiFacebook, label: "Facebook", href: "#" },
+  { icon: SiYoutube, label: "YouTube", href: "#" },
+  { icon: SiX, label: "X", href: "#" },
+  { icon: FaLinkedinIn, label: "LinkedIn", href: "#" },
 ];
 
 const VALUES = [
@@ -200,10 +192,11 @@ export function StorefrontFooter({ db }: { db: StoreDatabase }) {
   );
 }
 
-function StoreBadge({ platform, caption }: { platform: string; caption: string }) {
+function StoreBadge({ platform, caption }: { platform: "App Store" | "Google Play"; caption: string }) {
+  const Icon = platform === "App Store" ? SiApple : SiGoogleplay;
   return (
     <span className="flex h-12 items-center gap-3 rounded-[var(--radius-md)] bg-obsidian px-4 text-inverse">
-      <span className="text-[17px] leading-none">{platform === "App Store" ? "" : "▶"}</span>
+      <Icon className="h-5 w-5 shrink-0" />
       <span className="flex flex-col leading-tight">
         <span className="text-[8.5px] uppercase tracking-[0.14em] text-inverse/55">{caption}</span>
         <span className="text-[13px] font-medium">{platform}</span>

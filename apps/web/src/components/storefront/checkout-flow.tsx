@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   Banknote,
   Building2,
@@ -16,6 +17,8 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import type { IconType } from "react-icons";
+import { SiAmericanexpress, SiGooglepay, SiMastercard, SiPaytm, SiPhonepe, SiVisa } from "react-icons/si";
 import { SHIPPING_METHODS, priceCart, type Address, type PaymentMethodKind } from "@obsidian/commerce";
 import { Badge, Button, Card, Field, Input, Radio, Select, Separator, Textarea, cn, useToast } from "@obsidian/ui";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -27,6 +30,11 @@ import { CouponField } from "./cart-drawer";
 
 const STEPS = ["Address", "Delivery", "Payment", "Review"] as const;
 type Step = (typeof STEPS)[number];
+
+/** Marks a message the server curated for display — anything else caught
+ * (a network failure, a JSON parse error) is a raw technical error and must
+ * never reach the shopper verbatim. */
+class CheckoutError extends Error {}
 
 export interface CheckoutCustomer {
   id: string;
@@ -44,11 +52,30 @@ const PAYMENT_METHODS: {
   label: string;
   hint: string;
   icon: LucideIcon;
+  brands?: IconType[];
 }[] = [
-  { id: "upi", label: "UPI", hint: "Pay by any UPI app — instant confirmation", icon: Smartphone },
-  { id: "card", label: "Credit / debit card", hint: "Visa, Mastercard, RuPay and Amex", icon: CreditCard },
+  {
+    id: "upi",
+    label: "UPI",
+    hint: "Pay by any UPI app — instant confirmation",
+    icon: Smartphone,
+    brands: [SiGooglepay, SiPhonepe, SiPaytm],
+  },
+  {
+    id: "card",
+    label: "Credit / debit card",
+    hint: "Visa, Mastercard, RuPay and Amex",
+    icon: CreditCard,
+    brands: [SiVisa, SiMastercard, SiAmericanexpress],
+  },
   { id: "netbanking", label: "Net banking", hint: "All major Indian banks", icon: Building2 },
-  { id: "wallet", label: "Wallets", hint: "Paytm, PhonePe, Amazon Pay", icon: Wallet },
+  {
+    id: "wallet",
+    label: "Wallets",
+    hint: "Paytm, PhonePe, Amazon Pay",
+    icon: Wallet,
+    brands: [SiPaytm, SiPhonepe],
+  },
   { id: "bnpl", label: "Pay later", hint: "Split into 3 interest-free instalments", icon: Banknote },
   { id: "cod", label: "Cash on delivery", hint: "Pay the courier when it arrives", icon: Banknote },
 ];
@@ -135,14 +162,15 @@ export function CheckoutFlow({ customer }: { customer: CheckoutCustomer }) {
         }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data?.error ?? "We could not place the order.");
+      if (!response.ok) throw new CheckoutError(data?.error ?? "We could not place the order.");
 
       cart.setLastOrderId(data.orderId);
       cart.clear();
       toast({ title: "Order placed", description: `#${data.orderNumber}`, tone: "success" });
       router.push(`/checkout/success?order=${data.orderId}`);
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Something went wrong.";
+      const message =
+        caught instanceof CheckoutError ? caught.message : "We couldn't reach the server. Check your connection and try again.";
       setError(message);
       toast({ title: "Payment could not be completed", description: message, tone: "danger" });
       setPlacing(false);
@@ -394,6 +422,7 @@ export function CheckoutFlow({ customer }: { customer: CheckoutCustomer }) {
                 >
                   <Radio
                     name="payment"
+                    className="flex-1"
                     checked={paymentMethod === method.id}
                     onChange={() => setPaymentMethod(method.id)}
                     label={
@@ -404,6 +433,13 @@ export function CheckoutFlow({ customer }: { customer: CheckoutCustomer }) {
                     }
                     description={method.hint}
                   />
+                  {method.brands && (
+                    <div className="hidden shrink-0 items-center gap-2.5 text-ink-muted sm:flex">
+                      {method.brands.map((Brand, index) => (
+                        <Brand key={index} className="h-5 w-5" />
+                      ))}
+                    </div>
+                  )}
                 </label>
               ))}
             </div>
@@ -637,7 +673,9 @@ function Stepper({ current, onSelect }: { current: number; onSelect: (index: num
               disabled={index >= current}
               className="flex min-w-0 items-center gap-2"
             >
-              <span
+              <motion.span
+                animate={done || active ? { scale: [0.7, 1.08, 1] } : { scale: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className={cn(
                   "grid h-7 w-7 shrink-0 place-items-center rounded-full border text-[11.5px] font-medium transition-colors",
                   done
@@ -648,7 +686,7 @@ function Stepper({ current, onSelect }: { current: number; onSelect: (index: num
                 )}
               >
                 {done ? <Check className="h-3.5 w-3.5" /> : index + 1}
-              </span>
+              </motion.span>
               <span
                 className={cn(
                   "hidden truncate text-[11.5px] font-medium uppercase tracking-[0.1em] sm:inline",
@@ -659,7 +697,14 @@ function Stepper({ current, onSelect }: { current: number; onSelect: (index: num
               </span>
             </button>
             {index < STEPS.length - 1 && (
-              <span className={cn("h-px flex-1", done ? "bg-primary" : "bg-line")} />
+              <span className="relative h-px flex-1 bg-line">
+                <motion.span
+                  initial={false}
+                  animate={{ scaleX: done ? 1 : 0 }}
+                  transition={{ type: "spring", stiffness: 220, damping: 20 }}
+                  className="absolute inset-0 origin-left bg-primary"
+                />
+              </span>
             )}
           </li>
         );

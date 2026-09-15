@@ -15,6 +15,7 @@ import {
 } from "@obsidian/commerce";
 import { PORTRAITS, avatarImg } from "../images";
 import { Rng } from "../rng";
+import { FIRST_NAMES, LAST_NAMES } from "./people";
 
 export const PLANS: Plan[] = [
   {
@@ -22,8 +23,8 @@ export const PLANS: Plan[] = [
     name: "Starter",
     slug: "starter",
     tagline: "Get your first hundred orders out the door.",
-    monthlyPrice: major(499),
-    annualPrice: major(4990),
+    monthlyPrice: major(1499),
+    annualPrice: major(14990),
     currency: "INR",
     transactionFeeBps: 200,
     popular: false,
@@ -52,8 +53,8 @@ export const PLANS: Plan[] = [
     name: "Growth",
     slug: "growth",
     tagline: "For brands finding their rhythm.",
-    monthlyPrice: major(1499),
-    annualPrice: major(14990),
+    monthlyPrice: major(4999),
+    annualPrice: major(49990),
     currency: "INR",
     transactionFeeBps: 150,
     popular: true,
@@ -83,8 +84,8 @@ export const PLANS: Plan[] = [
     name: "Professional",
     slug: "professional",
     tagline: "Multi-location operations with real depth.",
-    monthlyPrice: major(3999),
-    annualPrice: major(39990),
+    monthlyPrice: major(19999),
+    annualPrice: major(199990),
     currency: "INR",
     transactionFeeBps: 90,
     popular: false,
@@ -114,8 +115,8 @@ export const PLANS: Plan[] = [
     name: "Enterprise",
     slug: "enterprise",
     tagline: "Custom infrastructure, custom terms.",
-    monthlyPrice: major(14999),
-    annualPrice: major(149990),
+    monthlyPrice: major(89999),
+    annualPrice: major(899990),
     currency: "INR",
     transactionFeeBps: 40,
     popular: false,
@@ -179,10 +180,10 @@ export const STORE_BLUEPRINTS: StoreBlueprint[] = [
     planId: "plan_enterprise",
     status: "active",
     domain: "obsidian.commerce.dev",
-    productsPerCategory: 5,
-    customerCount: 90,
-    orderCount: 280,
-    reviewCount: 240,
+    productsPerCategory: 14,
+    customerCount: 260,
+    orderCount: 750,
+    reviewCount: 650,
     flagship: true,
   },
   {
@@ -199,10 +200,10 @@ export const STORE_BLUEPRINTS: StoreBlueprint[] = [
     planId: "plan_professional",
     status: "active",
     domain: "voltwire.commerce.dev",
-    productsPerCategory: 4,
-    customerCount: 34,
-    orderCount: 72,
-    reviewCount: 60,
+    productsPerCategory: 10,
+    customerCount: 90,
+    orderCount: 180,
+    reviewCount: 150,
   },
   {
     id: "lumen",
@@ -218,10 +219,10 @@ export const STORE_BLUEPRINTS: StoreBlueprint[] = [
     planId: "plan_growth",
     status: "active",
     domain: "lumen.commerce.dev",
-    productsPerCategory: 5,
-    customerCount: 28,
-    orderCount: 58,
-    reviewCount: 48,
+    productsPerCategory: 12,
+    customerCount: 75,
+    orderCount: 150,
+    reviewCount: 120,
   },
   {
     id: "formline",
@@ -237,10 +238,10 @@ export const STORE_BLUEPRINTS: StoreBlueprint[] = [
     planId: "plan_professional",
     status: "active",
     domain: "formline.commerce.dev",
-    productsPerCategory: 4,
-    customerCount: 24,
-    orderCount: 46,
-    reviewCount: 38,
+    productsPerCategory: 10,
+    customerCount: 65,
+    orderCount: 120,
+    reviewCount: 95,
   },
   {
     id: "verdant",
@@ -256,10 +257,10 @@ export const STORE_BLUEPRINTS: StoreBlueprint[] = [
     planId: "plan_growth",
     status: "active",
     domain: "verdant.commerce.dev",
-    productsPerCategory: 5,
-    customerCount: 30,
-    orderCount: 64,
-    reviewCount: 44,
+    productsPerCategory: 12,
+    customerCount: 80,
+    orderCount: 160,
+    reviewCount: 110,
   },
   {
     id: "trailhead",
@@ -275,10 +276,10 @@ export const STORE_BLUEPRINTS: StoreBlueprint[] = [
     planId: "plan_growth",
     status: "trial",
     domain: "trailhead.commerce.dev",
-    productsPerCategory: 4,
-    customerCount: 22,
-    orderCount: 38,
-    reviewCount: 30,
+    productsPerCategory: 10,
+    customerCount: 60,
+    orderCount: 100,
+    reviewCount: 80,
   },
   {
     id: "aurum",
@@ -294,10 +295,10 @@ export const STORE_BLUEPRINTS: StoreBlueprint[] = [
     planId: "plan_starter",
     status: "active",
     domain: "aurum.commerce.dev",
-    productsPerCategory: 5,
-    customerCount: 18,
-    orderCount: 28,
-    reviewCount: 24,
+    productsPerCategory: 12,
+    customerCount: 50,
+    orderCount: 80,
+    reviewCount: 65,
   },
 ];
 
@@ -341,12 +342,19 @@ const STAFF_BLUEPRINTS: { name: string; role: StaffRole }[] = [
 
 export function buildStaff(storeId: string, referenceDate: Date, count = 8): StoreMember[] {
   const rng = new Rng(`${storeId}:staff`);
+  // Roles are fixed — every store needs an owner before it needs a marketer —
+  // but the people filling them differ per tenant. Reusing eight names across
+  // every store is immediately obvious in the platform-wide user list.
+  const names = rng.sample(
+    FIRST_NAMES.flatMap((first) => LAST_NAMES.slice(0, 6).map((last) => `${first} ${last}`)),
+    count,
+  );
   return STAFF_BLUEPRINTS.slice(0, count).map((bp, index) => ({
     id: `mem_${storeId}_${index}`,
     storeId,
     userId: `usr_${storeId}_${index}`,
-    name: bp.name,
-    email: `${bp.name.toLowerCase().replace(/\s+/g, ".")}@${storeId}.example`,
+    name: names[index] ?? bp.name,
+    email: `${(names[index] ?? bp.name).toLowerCase().replace(/\s+/g, ".")}@${storeId}.example`,
     avatar: avatarImg(PORTRAITS[index % PORTRAITS.length]!, 96),
     role: bp.role,
     permissions: ROLE_PRESETS[bp.role].permissions,

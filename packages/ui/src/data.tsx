@@ -1,4 +1,5 @@
 import * as React from "react";
+import { AnimatedNumber, type AnimatedNumberFormat } from "./animated-number";
 import { cn } from "./cn";
 
 /* ------------------------------- Table ------------------------------ */
@@ -187,6 +188,8 @@ export function Breadcrumb({
 export function Stat({
   label,
   value,
+  numeric,
+  numericFormat,
   delta,
   hint,
   icon,
@@ -195,6 +198,14 @@ export function Stat({
 }: {
   label: string;
   value: React.ReactNode;
+  /**
+   * Raw numeric value to animate (rolling count-up/down) whenever it
+   * changes. Requires `numericFormat`; when omitted, `value` renders as-is.
+   * A string preset (not a function) so this can be passed from a Server
+   * Component straight through to the "use client" `AnimatedNumber`.
+   */
+  numeric?: number;
+  numericFormat?: AnimatedNumberFormat;
   delta?: number;
   hint?: React.ReactNode;
   icon?: React.ReactNode;
@@ -211,7 +222,13 @@ export function Stat({
         <p className="text-[10.5px] font-medium uppercase tracking-[0.11em] text-ink-muted">{label}</p>
         {icon && <span className="text-ink-muted/70">{icon}</span>}
       </div>
-      <p className="mt-3 font-display text-[28px] leading-none tracking-tight text-ink tabular-nums">{value}</p>
+      <p className="mt-3 font-display text-[28px] leading-none tracking-tight text-ink tabular-nums">
+        {numeric != null && numericFormat ? (
+          <AnimatedNumber value={numeric} format={numericFormat} />
+        ) : (
+          value
+        )}
+      </p>
       <div className="mt-2.5 flex items-center gap-2">
         {delta != null && (
           <span
